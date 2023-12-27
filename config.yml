@@ -1,0 +1,78 @@
+# Model info
+model_name : "meta-llama/Llama-2-7b-hf"
+ft_model : "Llama-2-7b-sft"
+hf_auth_token : "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"
+llama_path : "/projectnb/pnn/llama/llama-2-7b-hf"
+
+# Dataset path
+train_path : "./benchmark/GSM8K/gsm8k_train.jsonl"
+test_path : "./benchmark/GSM8K/test.jsonl"
+
+# Saving path
+result_dir : "./results"
+save_dir : "./save_folder"
+data_save_dir : "./save_folder/data"
+hf_save_dir : "/projectnb/pnn/.cache"
+
+# Training length and number of the generated tokens
+train_max_len : 768
+max_new_tokens : 512
+
+# Batch size
+train_batch_size : 4
+eval_batch_size : 4
+
+# Number of training epochs
+epochs : 30
+
+# LoRA
+# LoRA attention dimension
+lora_r : 256
+# Alpha parameter for LoRA scaling
+lora_alpha : 512
+# Dropout probability for LoRA layers
+lora_dropout : 0.1
+
+# Quantization
+# Activate 4-bit precision base model loading
+use_4bit : True
+# Compute dtype for 4-bit base models
+bnb_4bit_compute_dtype : "float16"
+# Quantization type (fp4 or nf4) - 4-bit NormalFloat (NF4)
+bnb_4bit_quant_type : "nf4"
+# Activate nested quantization for 4-bit base models (double quantization)
+# nested quantization where the quantization constants from the first quantization are quantized again
+use_nested_quant : True
+
+# Output directory where the model predictions and checkpoints will be stored
+# Enable fp16/bf16 training (set bf16 to True with an A100)
+# Whether to use fp16 16-bit (mixed) precision training instead of 32-bit training.
+fp16 : False
+# Whether to use bf16 16-bit (mixed) precision training instead of 32-bit training. Requires Ampere or higher
+# NVIDIA architecture or using CPU (use_cpu) or Ascend NPU. This is an experimental API and it may change.
+bf16 : True
+# Number of update steps to accumulate the gradients
+gradient_accumulation_steps : 4
+# Maximum gradient normal (gradient clipping)
+#max_grad_norm : 0.3
+# Initial learning rate
+learning_rate : 0.00002
+# Weight decay to apply to all layers except bias/LayerNorm weights
+weight_decay : 0.0
+
+# Optimizer, Learning rate schedule, warm-up ratio
+optim : "paged_adamw_32bit"
+lr_scheduler_type : "cosine"
+warmup_ratio : 0.0
+
+# Save checkpoint every X updates steps
+save_steps : 500
+# Log every X updates steps
+logging_steps : 1
+# Evaluation steps
+eval_steps : 100
+
+# Pack multiple short examples in the same input sequence to increase efficiency
+device_map : "auto"
+num_cpu_cores : 8
+num_gpus : 1
