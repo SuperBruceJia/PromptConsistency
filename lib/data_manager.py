@@ -30,11 +30,13 @@ def dataset_maker(dataset):
         random.shuffle(questions)
 
         # Randomly select K items from the list
-        selected_q = random.sample(questions, 3)
-        formatted_q = gsm8k_prompt(question=selected_q, train=True)
-        answer_detail = lines["answer_detail"][0]
-
-        new_dataset.append({"question": formatted_q, "answer": answer_detail})
+        try:
+            selected_q = random.sample(questions, 3)
+            formatted_q = gsm8k_prompt(question=selected_q, train=True)
+            answer_detail = lines["answer_detail"][0]
+            new_dataset.append({"question": formatted_q, "answer": answer_detail})
+        except AssertionError:
+            pass
 
     return new_dataset
 
