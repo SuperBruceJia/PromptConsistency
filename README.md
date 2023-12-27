@@ -1,93 +1,11 @@
-# Co-evolution of LLMs via Adversarial Learning for Mathematical Reasoning
+# Semantics-preserving Prompt improves Self-consistency of Language Models
 [![Code License](https://img.shields.io/badge/Code%20License-MIT-green.svg)](CODE_LICENSE)
 [![Data License](https://img.shields.io/badge/Data%20License-CC%20By%20NC%204.0-red.svg)](DATA_LICENSE)
 [![Model Weight License](https://img.shields.io/badge/Model%20Weights%20License-LLaMA2-yellow)](IntuitLLMProject/LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/release/python-390/)
 
-## 🎯 Goal
-(1) Generate invariant responses across different types of semantics-preserving prompt transformations.\
-(2) Open-source **a Prompt Perturbation Toolkit** `PromptCraft` on GitHub.\
-(3) Introduce **a new benchmark** called `GSM8K-Consistency` 
-for analyzing the consistency of `Arithmetic Reasoning on GSM8K`. 
-This is a math-problem-related semantics-preserving perturbation benchmark 
-that can be very helpful for evaluating the consistency of arithmetic reasoning capability.\
-(4) Open-source this work and release our fine-tuned checkpoints of `Generator` to 🤗 `Hugging Face`.
-
-## 📝 Note
-(1) This repository strictly adheres to Tencent's internal coding 
-guidelines [(in Chinese)](https://github.com/SuperBruceJia/paper-reading/tree/master/Programming-Standards/python)
-, which are similar to the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html). 
-Code style is checked using [Flake8](https://flake8.pycqa.org/en/latest/) to ensure high quality.\
-(2) After discussions, we will start with the `LLaMA 2 - 7B` model and the `GSM8K` database.\
-(3) For the Discriminator $D$, we will apply the [Quantized Low Rank Adaptation](https://arxiv.org/abs/2305.14314): 
-(`6.74B` -> Quantized: `3.37B` -> LoRA Trainable: `33.55M`).
-
-> [!IMPORTANT]
-> [1] Use the **Structured Data** to train the model, _e.g._, "### Instruction. ### Response"
-> 
-> [2] Use a **better Optimizer**. I used `paged_adamw_32bit`
-> 
-> [3] Use [vllm](https://github.com/vllm-project/vllm) to speed up the inference.
-> 
-
 ## 🖼️ General Framework
 ![Framework.png](images/Framework.png)
-![Framework Details](images/Framework_Details.jpg)
-![Preliminary Architecture](images/Preliminary_Architecture_GAN.JPG)
-![Idea Updating](images/idea_update.jpg)
-![Semantics Evaluation](images/Semantics_Evaluation.jpg)
-
-## 🚩 Experimental Results
-
-<details><summary>Hyper-parameter Setting</summary>
-
-```yaml
-adv_saver_dir: ./save_folder/adv
-bf16: true
-bnb_4bit_compute_dtype: float16
-bnb_4bit_quant_type: nf4
-cache_dir: ./results
-d_eval_batch_size: 4
-d_saver_dir: ./save_folder/discriminator
-d_train_batch_size: 4
-device_map: auto
-eval_steps: 50
-fp16: false
-ft_model: Llama-2-7b-hf-sft
-g_eval_batch_size: 4
-g_saver_dir: ./save_folder/generator
-g_train_batch_size: 4
-github_token: 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
-gradient_accumulation_steps: 4
-gradient_checkpointing: true
-group_by_length: false
-gsm8k_path: ./benchmark/grade-school-math/grade_school_math/data/
-inference_max_len: 512
-learning_rate: 2.0e-05
-logging_steps: 1
-lora_alpha: 512
-lora_dropout: 0.1
-lora_r: 256
-lr_scheduler_type: cosine
-max_grad_norm: 0.3
-max_steps: -1
-model_name: meta-llama/Llama-2-7b-hf
-num_gpus: 1
-num_train_epochs: 1
-openai.api_key: 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
-optim: paged_adamw_32bit
-save_steps: 200
-test_path: ./benchmark/grade-school-math/grade_school_math/data/test.jsonl
-train_max_len: 768
-train_path: ./benchmark/grade-school-math/grade_school_math/data/train.jsonl
-updating_epochs: 10
-use_4bit: true
-use_auth_token: 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
-use_nested_quant: true
-warmup_ratio: 0.03
-weight_decay: 0.0
-```
-</details>
 
 ## 📝 Preliminaries
 ### 1. Environment Setting-up
