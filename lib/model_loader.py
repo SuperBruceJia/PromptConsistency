@@ -82,12 +82,6 @@ def model_initialize(config):
             "q_proj",
             "k_proj",
             "v_proj",
-            "o_proj",
-            "gate_proj",
-            "up_proj",
-            "down_proj",
-            "embed_tokens",
-            "lm_head"
         ],
         task_type=TaskType.CAUSAL_LM,
     )

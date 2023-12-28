@@ -28,7 +28,7 @@ def gsm8k_test(config, file_path, data_path):
     """
     start_t = time.time()
     max_new_tokens = config.get("max_new_tokens")
-    g_save_dir = config.get("g_save_dir")
+    save_dir = config.get("save_dir")
     num_gpus = config.get("num_gpus")
     llama_path = config.get("llama_path")
 
@@ -50,7 +50,7 @@ def gsm8k_test(config, file_path, data_path):
     stop_tokens = stop_token_list()
     sampling_params = SamplingParams(temperature=0.0, top_p=1, max_tokens=max_new_tokens, stop=stop_tokens)
     llm = LLM(model=llama_path, tensor_parallel_size=num_gpus, gpu_memory_utilization=0.85)
-    lora.LoRAModel.from_pretrained(llm.llm_engine.workers[0].model, g_save_dir + '/adapter')
+    lora.LoRAModel.from_pretrained(llm.llm_engine.workers[0].model, save_dir + '/adapter')
 
     completions = llm.generate(instances, sampling_params)
     for output in completions:
