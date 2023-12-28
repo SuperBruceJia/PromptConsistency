@@ -30,14 +30,12 @@ def dataset_maker(dataset):
         random.shuffle(questions)
 
         # Randomly select K items from the list
-        # try:
         num_q = random.randint(1, len(questions))
         selected_q = random.sample(questions, num_q)
         formatted_q = gsm8k_prompt(question=selected_q, num=num_q, train=True)
         answer_detail = lines["answer_detail"][0]
-        new_dataset.append({"question": formatted_q, "answer": answer_detail})
-        # except AssertionError:
-        #     pass
+        new_dataset.append({"question": formatted_q,
+                            "answer": answer_detail})
 
     return new_dataset
 
@@ -90,7 +88,9 @@ def preprocess(sources, targets, tokenizer):
     Returns: input_ids and target labels
     """
     examples = [s + t for s, t in zip(sources, targets)]
-    examples_tokenized, sources_tokenized = [tokenize_fn(strings, tokenizer) for strings in (examples, sources)]
+    examples_tokenized, sources_tokenized = [
+        tokenize_fn(strings, tokenizer) for strings in (examples, sources)
+    ]
 
     input_ids = examples_tokenized["input_ids"]
     labels = copy.deepcopy(input_ids)
@@ -98,10 +98,7 @@ def preprocess(sources, targets, tokenizer):
     for label, source_len in zip(labels, sources_tokenized["input_ids_lens"]):
         label[:source_len] = IGNORE_INDEX
 
-    return dict(
-        input_ids=input_ids,
-        labels=labels
-    )
+    return dict(input_ids=input_ids, labels=labels)
 
 
 class SupervisedDataset(Dataset):
@@ -125,16 +122,10 @@ class SupervisedDataset(Dataset):
         return len(self.sources)
 
     def naive__getitem__(self, i):
-        return dict(
-            input_ids=self.input_ids[i],
-            labels=self.labels[i]
-        )
+        return dict(input_ids=self.input_ids[i], labels=self.labels[i])
 
     def __getitem__(self, i):
-        return dict(
-            input_ids=self.sources[i],
-            labels=self.targets[i]
-        )
+        return dict(input_ids=self.sources[i], labels=self.targets[i])
 
 
 @dataclass
