@@ -19,8 +19,8 @@ train_max_len : 4096
 max_new_tokens : 512
 
 # Batch size
-train_batch_size : 4
-eval_batch_size : 4
+train_batch_size : 1
+eval_batch_size : 1
 
 # Number of training epochs
 epochs : 100
@@ -52,7 +52,7 @@ fp16 : False
 # NVIDIA architecture or using CPU (use_cpu) or Ascend NPU. This is an experimental API and it may change.
 bf16 : True
 # Number of update steps to accumulate the gradients
-gradient_accumulation_steps : 4
+gradient_accumulation_steps : 1
 # Maximum gradient normal (gradient clipping)
 #max_grad_norm : 0.3
 # Initial learning rate
