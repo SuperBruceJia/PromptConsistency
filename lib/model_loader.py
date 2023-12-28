@@ -124,6 +124,7 @@ def trainer_loader(config, model, tokenizer, data_module, num_train_epochs):
         per_device_train_batch_size=train_batch_size,
         per_device_eval_batch_size=eval_batch_size,
         gradient_accumulation_steps=gradient_accumulation_steps,
+        gradient_checkpointing=True,
         optim=optim,
         logging_steps=logging_steps,
         learning_rate=learning_rate,
