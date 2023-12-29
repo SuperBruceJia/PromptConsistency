@@ -21,12 +21,12 @@ def dataset_maker(dataset):
     new_dataset = []
     ids = dataset["id"]
     max_id = max(ids)
-
+    
     for id in range(max_id):
         questions = []
 
         # Select all lines where 'id' is equal to id
-        lines = dataset.filter(lambda example: example['id'] == id, batch_size=None, num_proc=8)
+        lines = dataset.filter(lambda example: example['id'] == id, batch_size=None)
 
         # Retrieved the paraphrased questions
         for q in lines["paraphrased_question"]:
