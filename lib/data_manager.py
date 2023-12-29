@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 import torch
 from torch.utils.data import Dataset
-from datasets import load_dataset
+from datasets import load_dataset, set_caching_enabled
 
 from utils.utils import gsm8k_prompt
 
@@ -106,6 +106,9 @@ class SupervisedDataset(Dataset):
 
     def __init__(self):
         super(SupervisedDataset, self).__init__()
+
+        # Disable caching on a global scale
+        set_caching_enabled(False)
 
         # Load the fine-tuning dataset
         data = load_dataset("shuyuej/GSM8K-Consistency")
