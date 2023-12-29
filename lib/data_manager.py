@@ -3,6 +3,7 @@
 import random
 import copy
 from dataclasses import dataclass
+import multiprocess.context as ctx
 
 import torch
 from torch.utils.data import Dataset
@@ -15,6 +16,8 @@ IGNORE_INDEX = -100
 
 def dataset_maker(dataset):
     print("Start to make dataset!")
+    ctx._force_start_method('spawn')
+
     new_dataset = []
     ids = dataset["id"]
     max_id = max(ids)
@@ -25,9 +28,9 @@ def dataset_maker(dataset):
         # Select all lines where 'id' is equal to id
         lines = dataset.filter(lambda example: example['id'] == id)
 
+        # Retrieved the paraphrased questions
         for q in lines["paraphrased_question"]:
             questions.append(q)
-
         questions.append(lines["original_question"][0])
         random.shuffle(questions)
 
