@@ -26,7 +26,7 @@ def dataset_maker(dataset):
         questions = []
 
         # Select all lines where 'id' is equal to id
-        lines = dataset.filter(lambda example: example['id'] == id)
+        lines = dataset.filter(lambda example: example['id'] == id, batch_size=None, num_proc=8)
 
         # Retrieved the paraphrased questions
         for q in lines["paraphrased_question"]:
