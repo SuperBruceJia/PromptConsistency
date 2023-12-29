@@ -14,6 +14,7 @@ IGNORE_INDEX = -100
 
 
 def dataset_maker(dataset):
+    print("Start to make dataset!")
     new_dataset = []
     ids = dataset["id"]
     max_id = max(ids)
@@ -34,8 +35,7 @@ def dataset_maker(dataset):
         selected_q = random.sample(questions, num_q)
         formatted_q = gsm8k_prompt(question=selected_q, num=num_q, train=True)
         answer_detail = lines["answer_detail"][0]
-        new_dataset.append({"question": formatted_q,
-                            "answer": answer_detail})
+        new_dataset.append({"question": formatted_q, "answer": answer_detail})
 
     return new_dataset
 
