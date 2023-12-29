@@ -22,11 +22,12 @@ def dataset_maker(dataset):
     for id in range(max_id):
         questions = []
 
-        # Select all lines where 'id' is equal to 8
+        # Select all lines where 'id' is equal to id
         lines = dataset.filter(lambda example: example['id'] == id)
 
         for q in lines["paraphrased_question"]:
             questions.append(q)
+
         questions.append(lines["original_question"][0])
         random.shuffle(questions)
 
