@@ -7,6 +7,8 @@ import json
 import yaml
 from fraction import Fraction
 
+from data_processing import paragraph_split
+
 DEFAULT_BOS_TOKEN = "<s>"
 DEFAULT_EOS_TOKEN = "</s>"
 DEFAULT_PAD_TOKEN = "[PAD]"
@@ -172,7 +174,7 @@ class CustomStream:
         pass
 
 
-def gsm8k_prompt(question, num=1, train=False):
+def gsm8k_prompt(question, train=False):
     """The formatting prompts function for GSM8K database
 
     :param question: Question (task description)
@@ -183,16 +185,18 @@ def gsm8k_prompt(question, num=1, train=False):
         prompt = ("Below are semantics similar instructions that describe a task. "
                   "Write a response that appropriately completes the request and give one consistent answer.")
 
-        for i in range(1, num+1):
+        for q in question:
             prompt += "\n\n### Instruction:\n"
-            prompt += question[i-1]
+            prompt += q
 
         prompt += "\n\n### Response: Let's think step by step."
 
     else:
+        backward_ques = backward(sentence=question)
         prompt = ("Below are semantics similar instructions that describe a task. "
                   "Write a response that appropriately completes the request and give one consistent answer."
                   "\n\n### Instruction:\n" + question +
+                  "\n\n### Instruction:\n" + backward_ques +
                   "\n\n### Response: Let's think step by step.")
 
     return prompt
@@ -210,3 +214,20 @@ def unwrap_model(model):
         return unwrap_model(model.module)
     else:
         return model
+
+
+def backward(sentence):
+    # Split paragraph into sentences
+    sen_split = paragraph_split.paragraph_splitter(sentence)
+
+    # Reverse the order of list elements
+    sen_split.reverse()
+
+    # Changing the alphabet letters to lowercase in the first sentence
+    sen_split[0] = sen_split[0].lower()
+
+    sentence = " ".join(sen_split)
+
+    sentence = "Given the following statements, " + sentence
+
+    return sentence
