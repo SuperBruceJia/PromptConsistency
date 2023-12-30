@@ -184,9 +184,7 @@ def gsm8k_prompt(question, num=1, train=False):
                   "Write a response that appropriately completes the request and give one consistent answer.")
 
         for i in range(1, num+1):
-            prompt += "\n\n### Instruction "
-            prompt += str(i)
-            prompt += ":\n"
+            prompt += "\n\n### Instruction:\n"
             prompt += question[i-1]
 
         prompt += "\n\n### Response: Let's think step by step."
@@ -194,7 +192,7 @@ def gsm8k_prompt(question, num=1, train=False):
     else:
         prompt = ("Below are semantics similar instructions that describe a task. "
                   "Write a response that appropriately completes the request and give one consistent answer."
-                  "\n\n### Instruction 1:\n" + question +
+                  "\n\n### Instruction:\n" + question +
                   "\n\n### Response: Let's think step by step.")
 
     return prompt

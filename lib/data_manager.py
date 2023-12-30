@@ -21,7 +21,7 @@ def dataset_maker(dataset):
     new_dataset = []
     ids = dataset["id"]
     max_id = max(ids)
-    
+
     for id in range(max_id):
         questions = []
 
@@ -40,7 +40,6 @@ def dataset_maker(dataset):
         formatted_q = gsm8k_prompt(question=selected_q, num=num_q, train=True)
         answer_detail = lines["answer_detail"][0]
         new_dataset.append({"question": formatted_q, "answer": answer_detail})
-        # print({"question": formatted_q, "answer": answer_detail}, '\n')
 
     return new_dataset
 
