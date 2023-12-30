@@ -35,9 +35,13 @@ def dataset_maker(dataset):
         random.shuffle(questions)
 
         # Randomly select K items from the list
-        # num_q = random.randint(2, 5)
-        num_q = 2
-        selected_q = random.sample(questions, num_q)
+        num_q = random.randint(1, 5)
+        try:
+            selected_q = random.sample(questions, num_q)
+        except BaseException:
+            num_q = random.randint(1, len(questions))
+            selected_q = random.sample(questions, num_q)
+
         formatted_q = gsm8k_prompt(question=selected_q, train=True)
         answer_detail = lines["answer_detail"][0]
         new_dataset.append({"question": formatted_q, "answer": answer_detail})
