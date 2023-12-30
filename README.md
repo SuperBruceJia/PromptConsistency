@@ -168,6 +168,11 @@ https://github.com/huggingface/transformers/blob/main/src/transformers/generatio
 
 flake8 ./
 
+---
+
+pip install spacy --user
+python -m spacy download en_core_web_sm
+
 ```
 
 ### 2. Selected Task
