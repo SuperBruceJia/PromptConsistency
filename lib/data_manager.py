@@ -3,7 +3,6 @@
 import random
 import copy
 from dataclasses import dataclass
-import multiprocess.context as ctx
 
 import torch
 from torch.utils.data import Dataset
@@ -16,7 +15,7 @@ IGNORE_INDEX = -100
 
 def dataset_maker(dataset):
     print("Start to make dataset!")
-    ctx._force_start_method('spawn')
+    # ctx._force_start_method('spawn')
 
     new_dataset = []
     ids = dataset["id"]
@@ -123,7 +122,8 @@ class SupervisedDataset(Dataset):
         set_caching_enabled(False)
 
         # Load the fine-tuning dataset
-        data = load_dataset("shuyuej/GSM8K-Consistency")
+        # data = load_dataset("shuyuej/GSM8K-Consistency")
+        data = load_dataset("shuyuej/mathdata_consistency")
         data = data["train"]
         data = dataset_maker(data)
 
