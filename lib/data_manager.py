@@ -43,6 +43,9 @@ def dataset_maker(dataset):
 
         selected_q.append(lines["original_question"][0])
 
+        # Reverse the order of list elements
+        selected_q.reverse()
+
         formatted_q = gsm8k_prompt(question=selected_q, train=True)
         answer_detail = lines["answer_detail"][0]
         new_dataset.append({"question": formatted_q, "answer": answer_detail})
