@@ -31,7 +31,6 @@ def dataset_maker(dataset):
         # Retrieved the paraphrased questions
         for q in lines["paraphrased_question"]:
             questions.append(q)
-        # random.shuffle(questions)
 
         # Randomly select K items from the list
         num_q = random.randint(1, 5)
