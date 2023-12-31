@@ -30,13 +30,13 @@ def dataset_maker(dataset):
             questions.append(q)
 
         # Randomly select K items from the list
-        num_q = random.randint(1, len(questions))
-        selected_q = random.sample(questions, num_q)
-        # try:
-        #     selected_q = random.sample(questions, num_q)
-        # except BaseException:
-        #     num_q = random.randint(1, len(questions))
-        #     selected_q = random.sample(questions, num_q)
+        num_q = random.randint(1, 5)
+        # selected_q = random.sample(questions, num_q)
+        try:
+            selected_q = random.sample(questions, num_q)
+        except BaseException:
+            num_q = random.randint(1, len(questions))
+            selected_q = random.sample(questions, num_q)
         selected_q.append(lines["original_question"][0])
 
         # Reverse the order of list elements
