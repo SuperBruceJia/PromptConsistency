@@ -26,7 +26,7 @@ def dataset_maker(dataset):
         lines = dataset.filter(lambda example: example['id'] == id, batch_size=None)
 
         # Retrieved the paraphrased questions
-        for q in lines["paraphrased_question"]:
+        for q in lines["question"]:
             questions.append(q)
 
         # Randomly select K items from the list
@@ -43,8 +43,8 @@ def dataset_maker(dataset):
         selected_q.reverse()
 
         formatted_q = gsm8k_prompt(question=selected_q, train=True)
-        answer_detail = lines["answer_detail"][0]
-        new_dataset.append({"question": formatted_q, "answer": answer_detail})
+        answer = lines["answer"][0]
+        new_dataset.append({"question": formatted_q, "answer": answer})
 
     return new_dataset
 
