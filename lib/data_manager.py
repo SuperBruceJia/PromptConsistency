@@ -31,8 +31,7 @@ def dataset_maker(dataset):
         # Retrieved the paraphrased questions
         for q in lines["paraphrased_question"]:
             questions.append(q)
-        questions.append(lines["original_question"][0])
-        random.shuffle(questions)
+        # random.shuffle(questions)
 
         # Randomly select K items from the list
         num_q = random.randint(1, 5)
@@ -41,6 +40,8 @@ def dataset_maker(dataset):
         except BaseException:
             num_q = random.randint(1, len(questions))
             selected_q = random.sample(questions, num_q)
+
+        selected_q.append(lines["original_question"][0])
 
         formatted_q = gsm8k_prompt(question=selected_q, train=True)
         answer_detail = lines["answer_detail"][0]
