@@ -61,7 +61,8 @@ learning_rate : 0.00002
 weight_decay : 0.0
 
 # Optimizer, Learning rate schedule, warm-up ratio
-optim : "paged_adamw_32bit"
+#optim : "paged_adamw_32bit"
+optim : "adamw_torch"
 lr_scheduler_type : "cosine"
 warmup_ratio : 0.03
 

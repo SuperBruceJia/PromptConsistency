@@ -28,19 +28,15 @@ def dataset_maker(dataset):
         # Retrieved the paraphrased questions
         for q in lines["question"]:
             questions.append(q)
+        questions.append(lines["original_question"][0])
 
         # Randomly select K items from the list
         num_q = random.randint(1, 5)
-        # selected_q = random.sample(questions, num_q)
         try:
             selected_q = random.sample(questions, num_q)
         except BaseException:
             num_q = random.randint(1, len(questions))
             selected_q = random.sample(questions, num_q)
-        selected_q.append(lines["original_question"][0])
-
-        # Reverse the order of list elements
-        selected_q.reverse()
 
         formatted_q = gsm8k_prompt(question=selected_q, train=True)
         answer = lines["answer"][0]
@@ -120,7 +116,6 @@ class SupervisedDataset(Dataset):
         set_caching_enabled(False)
 
         # Load the fine-tuning dataset
-        # data = load_dataset("shuyuej/GSM8K-Consistency")
         data = load_dataset("shuyuej/mathdata_consistency")
         data = data["train"]
         data = dataset_maker(data)

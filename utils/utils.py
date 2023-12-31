@@ -192,16 +192,12 @@ def gsm8k_prompt(question, train=False):
         prompt += "\n\n### Response: Let's think step by step."
 
     else:
+        backward_ques = backward(sentence=question)
         prompt = ("Below are semantics similar instructions that describe a task. "
                   "Write a response that appropriately completes the request and give one consistent answer."
                   "\n\n### Instruction:\n" + question +
+                  "\n\n### Instruction:\n" + backward_ques +
                   "\n\n### Response: Let's think step by step.")
-        # backward_ques = backward(sentence=question)
-        # prompt = ("Below are semantics similar instructions that describe a task. "
-        #           "Write a response that appropriately completes the request and give one consistent answer."
-        #           "\n\n### Instruction:\n" + question +
-        #           "\n\n### Instruction:\n" + backward_ques +
-        #           "\n\n### Response: Let's think step by step.")
 
     return prompt
 
@@ -231,7 +227,6 @@ def backward(sentence):
     sen_split[0] = sen_split[0].lower()
 
     sentence = " ".join(sen_split)
-
     sentence = "Given the following statements, " + sentence
 
     return sentence
