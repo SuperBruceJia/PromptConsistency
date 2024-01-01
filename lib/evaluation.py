@@ -38,7 +38,7 @@ def gsm8k_test(config, file_path, data_path):
     with open(data_path, "r+", encoding="utf8") as f:
         for idx, item in enumerate(jsonlines.Reader(f)):
             # Get the prompt template + question --> gsm8k_ins
-            temp_ins = gsm8k_prompt(question=item["question"], train=False)
+            temp_ins = gsm8k_prompt(question=item["question"])
             instances.append(temp_ins)
 
             # Get the label answer --> gsm8k_answers

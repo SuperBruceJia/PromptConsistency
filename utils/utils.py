@@ -174,7 +174,7 @@ class CustomStream:
         pass
 
 
-def gsm8k_prompt(question, train=False):
+def gsm8k_prompt(question, answer=None, train=False):
     """The formatting prompts function for GSM8K database
 
     :param question: Question (task description)
@@ -185,19 +185,23 @@ def gsm8k_prompt(question, train=False):
         prompt = ("Below are semantics similar instructions that describe a task. "
                   "Write a response that appropriately completes the request and give one consistent answer.")
 
-        for q in question:
+        for i, q in enumerate(question):
             prompt += "\n\n### Instruction:\n"
             prompt += q
-
-        prompt += "\n\n### Response: Let's think step by step."
-
+            prompt += "\n\n### Response: Let's think step by step."
+            if i < len(question) - 1:
+                prompt += answer
     else:
-        backward_ques = backward(sentence=question)
         prompt = ("Below are semantics similar instructions that describe a task. "
                   "Write a response that appropriately completes the request and give one consistent answer."
                   "\n\n### Instruction:\n" + question +
-                  "\n\n### Instruction:\n" + backward_ques +
                   "\n\n### Response: Let's think step by step.")
+        # backward_ques = backward(sentence=question)
+        # prompt = ("Below are semantics similar instructions that describe a task. "
+        #           "Write a response that appropriately completes the request and give one consistent answer."
+        #           "\n\n### Instruction:\n" + question +
+        #           "\n\n### Instruction:\n" + backward_ques +
+        #           "\n\n### Response: Let's think step by step.")
 
     return prompt
 

@@ -24,6 +24,7 @@ def dataset_maker(dataset):
 
         # Select all lines where 'id' is equal to id
         lines = dataset.filter(lambda example: example['id'] == id, batch_size=None)
+        answer = lines["answer"][0]
 
         # Retrieved the paraphrased questions
         for q in lines["question"]:
@@ -38,8 +39,7 @@ def dataset_maker(dataset):
             num_q = random.randint(1, len(questions))
             selected_q = random.sample(questions, num_q)
 
-        formatted_q = gsm8k_prompt(question=selected_q, train=True)
-        answer = lines["answer"][0]
+        formatted_q = gsm8k_prompt(question=selected_q, answer=answer, train=True)
         new_dataset.append({"question": formatted_q, "answer": answer})
 
     return new_dataset
@@ -92,7 +92,9 @@ def preprocess(sources, targets, tokenizer):
 
     Returns: input_ids and target labels
     """
-    examples = [s + t for s, t in zip(sources, targets)]
+    examples = [
+        s + t for s, t in zip(sources, targets)
+    ]
     examples_tokenized, sources_tokenized = [
         tokenize_fn(strings, tokenizer) for strings in (examples, sources)
     ]
