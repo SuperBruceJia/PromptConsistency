@@ -118,7 +118,8 @@ class SupervisedDataset(Dataset):
         set_caching_enabled(False)
 
         # Load the fine-tuning dataset
-        data = load_dataset("shuyuej/mathdata_consistency")
+        # data = load_dataset("shuyuej/mathdata_consistency")
+        data = load_dataset("shuyuej/GSM8K-Consistency")
         data = data["train"]
         data = dataset_maker(data)
 
