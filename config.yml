@@ -52,13 +52,11 @@ fp16 : False
 # NVIDIA architecture or using CPU (use_cpu) or Ascend NPU. This is an experimental API and it may change.
 bf16 : True
 # Number of update steps to accumulate the gradients
-gradient_accumulation_steps : 1
-# Maximum gradient normal (gradient clipping)
-#max_grad_norm : 0.3
+gradient_accumulation_steps : 4
 # Initial learning rate
 learning_rate : 0.00002
 # Weight decay to apply to all layers except bias/LayerNorm weights
-weight_decay : 0.0
+weight_decay : 0.
 
 # Optimizer, Learning rate schedule, warm-up ratio
 #optim : "paged_adamw_32bit"
