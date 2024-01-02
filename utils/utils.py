@@ -182,8 +182,13 @@ def gsm8k_prompt(question, answer=None, train=False):
     :return: The prompt of the GSM8K database
     """
     if train:
-        prompt = ("Below are semantics similar instructions that describe a task. "
-                  "Write a response that appropriately completes the request and give one consistent answer.")
+        # ("Below is an instruction that describes a task. Write a response that appropriately completes the request."
+        #  "\n\n### Instruction:\n{instruction}\n\n### Response: Let's think step by step.")
+
+        # prompt = ("Below are semantics similar instructions that describe a task. "
+        #           "Write a response that appropriately completes the request and give one consistent answer.")
+        prompt = ("Below is an instruction that describes a task. "
+                  "Write a response that appropriately completes the request.")
 
         for i, q in enumerate(question):
             prompt += "\n\n### Instruction:\n"
@@ -192,10 +197,14 @@ def gsm8k_prompt(question, answer=None, train=False):
             if i < len(question) - 1:
                 prompt += answer
     else:
-        prompt = ("Below are semantics similar instructions that describe a task. "
-                  "Write a response that appropriately completes the request and give one consistent answer."
+        prompt = ("Below is an instruction that describes a task. "
+                  "Write a response that appropriately completes the request."
                   "\n\n### Instruction:\n" + question +
                   "\n\n### Response: Let's think step by step.")
+        # prompt = ("Below are semantics similar instructions that describe a task. "
+        #           "Write a response that appropriately completes the request and give one consistent answer."
+        #           "\n\n### Instruction:\n" + question +
+        #           "\n\n### Response: Let's think step by step.")
         # backward_ques = backward(sentence=question)
         # prompt = ("Below are semantics similar instructions that describe a task. "
         #           "Write a response that appropriately completes the request and give one consistent answer."
