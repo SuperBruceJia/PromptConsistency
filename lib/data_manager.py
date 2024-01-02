@@ -39,8 +39,12 @@ def dataset_maker(dataset):
             num_q = random.randint(1, len(questions))
             selected_q = random.sample(questions, num_q)
 
-        formatted_q = gsm8k_prompt(question=selected_q, answer=answer, train=True)
-        new_dataset.append({"question": formatted_q, "answer": answer})
+        for i in range(len(selected_q)):
+            subset_q = selected_q[:i + 1]
+            formatted_q = gsm8k_prompt(question=subset_q, answer=answer, train=True)
+            new_dataset.append({"question": formatted_q, "answer": answer})
+
+    random.shuffle(new_dataset)
 
     return new_dataset
 
