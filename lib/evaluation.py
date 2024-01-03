@@ -27,6 +27,9 @@ def gsm8k_test(config, file_path, data_path):
     :param data_path: dataset path
     :param file_path: save file path and file name
     """
+    # Disable caching on a global scale
+    set_caching_enabled(False)
+
     start_t = time.time()
     max_new_tokens = config.get("max_new_tokens")
     save_dir = config.get("save_dir")
