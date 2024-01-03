@@ -34,7 +34,7 @@ def gsm8k_test(config, file_path, data_path):
     llama_path = config.get("llama_path")
 
     dataset = load_dataset("shuyuej/temporary_testing_data")
-    dataset = dataset["train"]
+    dataset = dataset["test"]
 
     ids = dataset["id"]
     max_id = max(ids)
