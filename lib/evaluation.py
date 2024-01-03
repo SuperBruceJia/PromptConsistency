@@ -3,11 +3,10 @@
 import gc
 import sys
 import time
-import random
+from collections import Counter
 
 import torch
-import jsonlines
-from datasets import load_dataset, set_caching_enabled
+from datasets import load_dataset
 from vllm import LLM, SamplingParams
 from vllm.model_executor.adapters import lora
 from vllm.model_executor.parallel_utils.parallel_state import destroy_model_parallel
@@ -21,15 +20,12 @@ from utils.utils import (
 MAX_INT = sys.maxsize
 
 
-def gsm8k_test(config, file_path, data_path):
+def gsm8k_test(config):
     """
     Codes Credits: https://github.com/meta-math/MetaMath/blob/main/eval_gsm8k.py
     :param data_path: dataset path
     :param file_path: save file path and file name
     """
-    # Disable caching on a global scale
-    set_caching_enabled(False)
-
     start_t = time.time()
     max_new_tokens = config.get("max_new_tokens")
     save_dir = config.get("save_dir")
@@ -42,74 +38,79 @@ def gsm8k_test(config, file_path, data_path):
     ids = dataset["id"]
     max_id = max(ids)
     instances = []
-    answers = []
+    acc = []
     for id in range(max_id):
         # Select all lines where 'id' is equal to id
         lines = dataset.filter(lambda example: example['id'] == id, batch_size=None)
 
-        temp_ins = []
+        # Retrieved the original question
+        ori_phrase = lines["original_question"][0]
+
         # Retrieved the paraphrased questions
+        phrase = []
         for q in lines["paraphrased_question"]:
-            temp_ins.append(q)
+            phrase.append(q)
 
-        # Randomly select K items from the list
-        num_q = 2
-        try:
-            selected_q = random.sample(temp_ins, num_q)
-        except BaseException:
-            selected_q = random.sample(temp_ins, 1)
-        selected_q.append(lines["original_question"][0])
-        answer = lines["answer_detail"][0]
+        pairs = []
+        if len(phrase) >= 2:
+            for i in range(len(phrase)):
+                for j in range(i + 1, len(phrase)):
+                    pairs.append([ori_phrase, phrase[i], phrase[j]])
+                    pairs.append([ori_phrase, phrase[j], phrase[i]])
 
-        prompt = gsm8k_prompt(question=selected_q)
-        instances.append(prompt)
+            for i in range(len(pairs)):
+                pair = pairs[i]
+                prompt = gsm8k_prompt(question=pair)
+                instances.append(prompt)
+        else:
+            pairs = phrase
+            pairs.append(ori_phrase)
+            pairs.reverse()
+            prompt = gsm8k_prompt(question=pairs)
+            instances.append(prompt)
 
         # Get the label answer --> gsm8k_answers
+        answer = lines["answer_detail"][0]
         temp_ans = answer.split('#### ')[1]
         temp_ans = int(temp_ans.replace(',', ''))
-        answers.append(temp_ans)
 
-    responses = []
-    stop_tokens = stop_token_list()
-    sampling_params = SamplingParams(temperature=0.0, top_p=1, max_tokens=max_new_tokens, stop=stop_tokens)
-    llm = LLM(model=llama_path, tensor_parallel_size=num_gpus, gpu_memory_utilization=0.90)
-    lora.LoRAModel.from_pretrained(llm.llm_engine.workers[0].model, save_dir + '/adapter')
+        responses = []
+        stop_tokens = stop_token_list()
+        sampling_params = SamplingParams(temperature=0.0, top_p=1, max_tokens=max_new_tokens, stop=stop_tokens)
+        llm = LLM(model=llama_path, tensor_parallel_size=num_gpus, gpu_memory_utilization=0.80)
+        lora.LoRAModel.from_pretrained(llm.llm_engine.workers[0].model, save_dir + '/adapter')
 
-    completions = llm.generate(instances, sampling_params)
-    for output in completions:
-        temp_gen = output.outputs[0].text
-        responses.append(temp_gen)
+        completions = llm.generate(instances, sampling_params)
+        for output in completions:
+            temp_gen = output.outputs[0].text
+            responses.append(temp_gen)
 
-    print('Successfully finished generating', len(instances), 'samples!')
-    acc = []
-    invalid_out = []
-    for idx, (instance_item, response_item, answer_item) in enumerate(zip(instances, responses, answers)):
-        y_pred = extract_number(response_item)
-        if y_pred is not None:
-            acc.append(float(y_pred) == float(answer_item))
+        print('Successfully finished generating', len(instances), 'samples!')
+        predictions = []
+        for response_item in responses:
+            pred = extract_number(response_item)
+            predictions.append(pred)
+
+        # Count occurrences of each element
+        element_counts = Counter(predictions)
+
+        # Find the most common element
+        final_pred = element_counts.most_common(1)[0][0]
+        if final_pred is not None:
+            acc.append(float(final_pred) == float(temp_ans))
         else:
             acc.append(False)
-            temp = {'question': instance_item, 'output': response_item, 'answer': answer_item}
-            invalid_out.append(temp)
+
+        # Delete the llm object and free the memory
+        destroy_model_parallel()
+        del llm
+        gc.collect()
+        torch.cuda.empty_cache()
+        torch.distributed.destroy_process_group()
+        print("Successfully delete the llm pipeline and free the GPU memory.\n\n\n\n")
 
     accuracy = sum(acc) / len(acc)
     end_t = time.time()
     elapsed_t = end_t - start_t
     print(f"Finished performance evaluation in {elapsed_t:.2f} seconds")
-
-    # Print the accuracy and the length of the invalid output
-    print('Invalid output length:', len(invalid_out), ', Testing length:', len(acc), ', Accuracy:', accuracy)
-
-    # Save the invalid output in a txt file
-    file = open(file_path, 'w')
-    file.write(str(invalid_out))
-    file.close()
-    print('Successfully saved the invalid output.')
-
-    # Delete the llm object and free the memory
-    destroy_model_parallel()
-    del llm
-    gc.collect()
-    torch.cuda.empty_cache()
-    torch.distributed.destroy_process_group()
-    print("Successfully delete the llm pipeline and free the GPU memory.\n\n\n\n")
+    print('Testing length:', len(acc), ' Accuracy:', accuracy)

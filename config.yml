@@ -19,17 +19,17 @@ train_max_len : 1024
 max_new_tokens : 512
 
 # Batch size
-train_batch_size : 1
-eval_batch_size : 1
+train_batch_size : 4
+eval_batch_size : 4
 
 # Number of training epochs
 epochs : 100
 
 # LoRA
 # LoRA attention dimension
-lora_r : 1024
+lora_r : 2048
 # Alpha parameter for LoRA scaling
-lora_alpha : 2048
+lora_alpha : 4096
 # Dropout probability for LoRA layers
 lora_dropout : 0.1
 

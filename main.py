@@ -76,8 +76,7 @@ def main(config):
 
         # Performance evaluation on the testing set
         print("Evaluate the model's performance on the Testing Set")
-        save_file = result_dir + '/' + ft_model + '_Iteration_' + str(iterate) + '_invalid_outputs_list.txt'
-        gsm8k_test(config=config, file_path=save_file, data_path=test_path)
+        gsm8k_test(config=config)
 
 
 if __name__ == "__main__":
