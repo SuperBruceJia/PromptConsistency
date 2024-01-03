@@ -24,7 +24,6 @@ def dataset_maker(dataset):
 
         # Select all lines where 'id' is equal to id
         lines = dataset.filter(lambda example: example['id'] == id, batch_size=None)
-        answer = lines["answer_detail"][0]
 
         # Retrieved the paraphrased questions
         for q in lines["paraphrased_question"]:
@@ -32,21 +31,57 @@ def dataset_maker(dataset):
         questions.append(lines["original_question"][0])
 
         # Randomly select K items from the list
-        num_q = random.randint(1, 5)
+        num_q = 3
         try:
             selected_q = random.sample(questions, num_q)
         except BaseException:
             num_q = random.randint(1, len(questions))
             selected_q = random.sample(questions, num_q)
 
-        for i in range(len(selected_q)):
-            subset_q = selected_q[:i + 1]
-            formatted_q = gsm8k_prompt(question=subset_q, answer=answer, train=True)
-            new_dataset.append({"question": formatted_q, "answer": answer})
+        answer = lines["answer_detail"][0]
+
+        prompt = gsm8k_prompt(question=selected_q)
+        new_dataset.append({"question": prompt, "answer": answer})
 
     random.shuffle(new_dataset)
 
     return new_dataset
+
+
+# def dataset_maker(dataset):
+#     print("Start to make dataset!")
+#     new_dataset = []
+#     ids = dataset["id"]
+#     max_id = max(ids)
+#
+#     for id in range(max_id):
+#         questions = []
+#
+#         # Select all lines where 'id' is equal to id
+#         lines = dataset.filter(lambda example: example['id'] == id, batch_size=None)
+#         answer = lines["answer_detail"][0]
+#
+#         # Retrieved the paraphrased questions
+#         for q in lines["paraphrased_question"]:
+#             questions.append(q)
+#         questions.append(lines["original_question"][0])
+#
+#         # Randomly select K items from the list
+#         num_q = random.randint(1, 5)
+#         try:
+#             selected_q = random.sample(questions, num_q)
+#         except BaseException:
+#             num_q = random.randint(1, len(questions))
+#             selected_q = random.sample(questions, num_q)
+#
+#         for i in range(len(selected_q)):
+#             subset_q = selected_q[:i + 1]
+#             formatted_q = gsm8k_prompt(question=subset_q, answer=answer, train=True)
+#             new_dataset.append({"question": formatted_q, "answer": answer})
+#
+#     random.shuffle(new_dataset)
+#
+#     return new_dataset
 
 
 def tokenize_fn(strings, tokenizer):

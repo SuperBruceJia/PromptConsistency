@@ -3,10 +3,11 @@
 import gc
 import sys
 import time
+import random
 
 import torch
 import jsonlines
-
+from datasets import load_dataset, set_caching_enabled
 from vllm import LLM, SamplingParams
 from vllm.model_executor.adapters import lora
 from vllm.model_executor.parallel_utils.parallel_state import destroy_model_parallel
@@ -32,24 +33,43 @@ def gsm8k_test(config, file_path, data_path):
     num_gpus = config.get("num_gpus")
     llama_path = config.get("llama_path")
 
-    # Read the database and retrieve the label `gsm8k_answers`
+    dataset = load_dataset("shuyuej/temporary_testing_data")
+    dataset = dataset["train"]
+
+    ids = dataset["id"]
+    max_id = max(ids)
     instances = []
     answers = []
-    with open(data_path, "r+", encoding="utf8") as f:
-        for idx, item in enumerate(jsonlines.Reader(f)):
-            # Get the prompt template + question --> gsm8k_ins
-            temp_ins = gsm8k_prompt(question=item["question"])
-            instances.append(temp_ins)
+    for id in range(max_id):
+        # Select all lines where 'id' is equal to id
+        lines = dataset.filter(lambda example: example['id'] == id, batch_size=None)
 
-            # Get the label answer --> gsm8k_answers
-            temp_ans = item['answer'].split('#### ')[1]
-            temp_ans = int(temp_ans.replace(',', ''))
-            answers.append(temp_ans)
+        temp_ins = []
+        # Retrieved the paraphrased questions
+        for q in lines["paraphrased_question"]:
+            temp_ins.append(q)
+
+        # Randomly select K items from the list
+        num_q = 2
+        try:
+            selected_q = random.sample(temp_ins, num_q)
+        except BaseException:
+            selected_q = random.sample(temp_ins, 1)
+        selected_q.append(lines["original_question"][0])
+        answer = lines["answer_detail"][0]
+
+        prompt = gsm8k_prompt(question=selected_q)
+        instances.append(prompt)
+
+        # Get the label answer --> gsm8k_answers
+        temp_ans = answer.split('#### ')[1]
+        temp_ans = int(temp_ans.replace(',', ''))
+        answers.append(temp_ans)
 
     responses = []
     stop_tokens = stop_token_list()
     sampling_params = SamplingParams(temperature=0.0, top_p=1, max_tokens=max_new_tokens, stop=stop_tokens)
-    llm = LLM(model=llama_path, tensor_parallel_size=num_gpus, gpu_memory_utilization=0.85)
+    llm = LLM(model=llama_path, tensor_parallel_size=num_gpus, gpu_memory_utilization=0.90)
     lora.LoRAModel.from_pretrained(llm.llm_engine.workers[0].model, save_dir + '/adapter')
 
     completions = llm.generate(instances, sampling_params)
@@ -75,9 +95,7 @@ def gsm8k_test(config, file_path, data_path):
     print(f"Finished performance evaluation in {elapsed_t:.2f} seconds")
 
     # Print the accuracy and the length of the invalid output
-    print('Invalid output length:', len(invalid_out),
-          ', Testing length:', len(acc),
-          ', Accuracy:', accuracy)
+    print('Invalid output length:', len(invalid_out), ', Testing length:', len(acc), ', Accuracy:', accuracy)
 
     # Save the invalid output in a txt file
     file = open(file_path, 'w')
