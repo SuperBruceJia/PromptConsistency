@@ -15,7 +15,7 @@ data_save_dir : "./save_folder/data"
 hf_save_dir : "/projectnb/pnn/.cache"
 
 # Training length and number of the generated tokens
-train_max_len : 4096
+train_max_len : 1024
 max_new_tokens : 512
 
 # Batch size
@@ -27,9 +27,9 @@ epochs : 100
 
 # LoRA
 # LoRA attention dimension
-lora_r : 2048
+lora_r : 1024
 # Alpha parameter for LoRA scaling
-lora_alpha : 4096
+lora_alpha : 2048
 # Dropout probability for LoRA layers
 lora_dropout : 0.1
 
