@@ -27,9 +27,9 @@ epochs : 100
 
 # LoRA
 # LoRA attention dimension
-lora_r : 2048
+lora_r : 512
 # Alpha parameter for LoRA scaling
-lora_alpha : 4096
+lora_alpha : 1024
 # Dropout probability for LoRA layers
 lora_dropout : 0.1
 
