@@ -37,9 +37,11 @@ def gsm8k_test(config):
 
     ids = dataset["id"]
     max_id = max(ids)
-    instances = []
     acc = []
     for id in range(max_id):
+        prompts = []
+        responses = []
+
         # Select all lines where 'id' is equal to id
         lines = dataset.filter(lambda example: example['id'] == id, batch_size=None)
 
@@ -61,43 +63,42 @@ def gsm8k_test(config):
             for i in range(len(pairs)):
                 pair = pairs[i]
                 prompt = gsm8k_prompt(question=pair)
-                instances.append(prompt)
+                prompts.append(prompt)
         else:
             pairs = phrase
             pairs.append(ori_phrase)
             pairs.reverse()
             prompt = gsm8k_prompt(question=pairs)
-            instances.append(prompt)
+            prompts.append(prompt)
 
         # Get the label answer --> gsm8k_answers
         answer = lines["answer_detail"][0]
-        temp_ans = answer.split('#### ')[1]
-        temp_ans = int(temp_ans.replace(',', ''))
+        ans = answer.split('#### ')[1]
+        label = int(ans.replace(',', ''))
 
-        responses = []
         stop_tokens = stop_token_list()
         sampling_params = SamplingParams(temperature=0.0, top_p=1, max_tokens=max_new_tokens, stop=stop_tokens)
         llm = LLM(model=llama_path, tensor_parallel_size=num_gpus, gpu_memory_utilization=0.80)
         lora.LoRAModel.from_pretrained(llm.llm_engine.workers[0].model, save_dir + '/adapter')
 
-        completions = llm.generate(instances, sampling_params)
+        completions = llm.generate(prompts, sampling_params)
         for output in completions:
-            temp_gen = output.outputs[0].text
-            responses.append(temp_gen)
+            gen = output.outputs[0].text
+            responses.append(gen)
 
-        print('Successfully finished generating', len(instances), 'samples!')
-        predictions = []
+        print('Successfully finished generating', len(prompts), 'samples!')
+        preds = []
         for response_item in responses:
             pred = extract_number(response_item)
-            predictions.append(pred)
+            preds.append(pred)
 
         # Count occurrences of each element
-        element_counts = Counter(predictions)
+        counts = Counter(preds)
 
         # Find the most common element
-        final_pred = element_counts.most_common(1)[0][0]
-        if final_pred is not None:
-            acc.append(float(final_pred) == float(temp_ans))
+        prediction = counts.most_common(1)[0][0]
+        if prediction is not None:
+            acc.append(float(prediction) == float(label))
         else:
             acc.append(False)
 
@@ -107,8 +108,9 @@ def gsm8k_test(config):
         gc.collect()
         torch.cuda.empty_cache()
         torch.distributed.destroy_process_group()
-        print("Successfully delete the llm pipeline and free the GPU memory.\n\n\n\n")
+        print("Successfully delete the llm pipeline and free the GPU memory.\n")
 
+    # Calculate accuracy
     accuracy = sum(acc) / len(acc)
     end_t = time.time()
     elapsed_t = end_t - start_t

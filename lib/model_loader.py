@@ -136,7 +136,7 @@ def trainer_loader(config, model, tokenizer, data_module, num_train_epochs):
         lr_scheduler_type=lr_scheduler_type,
         report_to="tensorboard",
         save_steps=save_steps,
-        save_total_limit=5,
+        save_total_limit=1,
     )
 
     # Set supervised fine-tuning parameters
