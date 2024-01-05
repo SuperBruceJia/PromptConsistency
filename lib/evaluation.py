@@ -86,7 +86,7 @@ def gsm8k_test(config):
             gen = output.outputs[0].text
             responses.append(gen)
 
-        print('Successfully finished generating', len(prompts), 'samples!')
+        print('Regarding testing sample ID:', id, ', successfully finished generating', len(prompts), 'samples!')
         preds = []
         for response_item in responses:
             pred = extract_number(response_item)
