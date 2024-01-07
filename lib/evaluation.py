@@ -3,6 +3,7 @@
 import gc
 import sys
 import time
+import random
 from collections import Counter
 
 import torch
@@ -64,6 +65,11 @@ def gsm8k_test(config):
                 pair = pairs[i]
                 prompt = gsm8k_prompt(question=pair)
                 prompts.append(prompt)
+
+            number = 32
+            if len(prompts) >= number:
+                prompts = random.sample(prompts, number)
+
         else:
             pairs = phrase
             pairs.append(ori_phrase)
