@@ -33,8 +33,15 @@ def gsm8k_test(config):
     num_gpus = config.get("num_gpus")
     llama_path = config.get("llama_path")
 
+    # Load dataset
     dataset = load_dataset("shuyuej/temporary_testing_data")
     dataset = dataset["test"]
+
+    # Load LLM
+    stop_tokens = stop_token_list()
+    sampling_params = SamplingParams(temperature=0.0, top_p=1, max_tokens=max_new_tokens, stop=stop_tokens)
+    llm = LLM(model=llama_path, tensor_parallel_size=num_gpus, gpu_memory_utilization=0.80)
+    lora.LoRAModel.from_pretrained(llm.llm_engine.workers[0].model, save_dir + '/adapter')
 
     ids = dataset["id"]
     max_id = max(ids)
@@ -82,11 +89,6 @@ def gsm8k_test(config):
         ans = answer.split('#### ')[1]
         label = int(ans.replace(',', ''))
 
-        stop_tokens = stop_token_list()
-        sampling_params = SamplingParams(temperature=0.0, top_p=1, max_tokens=max_new_tokens, stop=stop_tokens)
-        llm = LLM(model=llama_path, tensor_parallel_size=num_gpus, gpu_memory_utilization=0.80)
-        lora.LoRAModel.from_pretrained(llm.llm_engine.workers[0].model, save_dir + '/adapter')
-
         completions = llm.generate(prompts, sampling_params)
         for output in completions:
             gen = output.outputs[0].text
@@ -108,17 +110,18 @@ def gsm8k_test(config):
         else:
             acc.append(False)
 
-        # Delete the llm object and free the memory
-        destroy_model_parallel()
-        del llm
-        gc.collect()
-        torch.cuda.empty_cache()
-        torch.distributed.destroy_process_group()
-        print("Successfully delete the llm pipeline and free the GPU memory.\n")
-
     # Calculate accuracy
     accuracy = sum(acc) / len(acc)
     end_t = time.time()
     elapsed_t = end_t - start_t
     print(f"Finished performance evaluation in {elapsed_t:.2f} seconds")
     print('Testing length:', len(acc), ' Accuracy:', accuracy)
+
+    # Delete the llm object and free the memory
+    destroy_model_parallel()
+    del llm
+    gc.collect()
+    torch.cuda.empty_cache()
+    torch.distributed.destroy_process_group()
+    print("Successfully delete the llm pipeline and free the GPU memory.\n")
+
