@@ -66,7 +66,7 @@ def main(config):
             model=model,
             tokenizer=tokenizer,
             data_module=data,
-            num_train_epochs=1
+            num_train_epochs=5
         )
         trainer.train()
         trainer.model.save_pretrained(save_dir + '/adapter')
