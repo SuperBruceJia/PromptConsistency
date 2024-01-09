@@ -73,9 +73,9 @@ def gsm8k_test(config):
                 prompt = gsm8k_prompt(question=pair)
                 prompts.append(prompt)
 
-            # number = 64
-            # if len(prompts) >= number:
-            #     prompts = random.sample(prompts, number)
+            number = 64
+            if len(prompts) >= number:
+                prompts = random.sample(prompts, number)
 
         else:
             pairs = phrase
