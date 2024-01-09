@@ -75,6 +75,7 @@ def gsm8k_test(config):
 
             number = 64
             if len(prompts) >= number:
+                random.seed(0)
                 prompts = random.sample(prompts, number)
 
         else:
