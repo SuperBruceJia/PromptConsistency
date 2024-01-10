@@ -34,7 +34,7 @@ def model_initialize(config):
     device_map = config.get("device_map")
     train_max_len = config.get("train_max_len")
     hf_auth_token = config.get("hf_auth_token")
-    save_dir = config.get("save_dir")
+    # save_dir = config.get("save_dir")
     llama_path = config.get("llama_path")
 
     # Load the base model
@@ -115,7 +115,7 @@ def trainer_loader(config, model, tokenizer, data_module, num_train_epochs):
     fp16 = config.get("fp16")
     bf16 = config.get("bf16")
     save_dir = config.get("save_dir")
-    save_steps = config.get("save_steps")
+    # save_steps = config.get("save_steps")
 
     # Set training parameters
     arguments = TrainingArguments(

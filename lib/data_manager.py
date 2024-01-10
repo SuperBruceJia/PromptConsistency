@@ -31,7 +31,7 @@ def dataset_maker(dataset):
         questions.append(lines["original_question"][0])
 
         # Randomly select K items from the list
-        num_q = 3
+        num_q = random.randint(1, 5)
         try:
             selected_q = random.sample(questions, num_q)
         except BaseException:
