@@ -181,11 +181,13 @@ def gsm8k_prompt(question):
     :param answer: Answer to the Question
     :return: The prompt of the GSM8K database
     """
-    prompt = ("Below are semantics similar instructions that describe a task. "
-              "Write a response that appropriately completes the request and give one consistent answer.")
+    prompt = ("Below are semantics similar instructions that describe a task. " +
+              "Write a consistent response that appropriately completes these requests.")
 
     for i, q in enumerate(question):
-        prompt += "\n\n### Instruction:\n"
+        prompt += "\n\n### Instruction "
+        prompt += str(i)
+        prompt += ":\n"
         prompt += q
 
     prompt += "\n\n### Response: Let's think step by step."

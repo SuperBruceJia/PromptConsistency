@@ -50,8 +50,8 @@ from utils.utils import CustomStream, load_config
 def main(config):
     """Run the program"""
     # Retrieve the pathes of needed hyperparameters
-    ft_model = config.get("ft_model")
-    test_path = config.get("test_path")
+    # ft_model = config.get("ft_model")
+    # test_path = config.get("test_path")
     save_dir = config.get("save_dir")
     epochs = config.get("epochs")
 

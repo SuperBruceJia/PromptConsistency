@@ -15,7 +15,7 @@ data_save_dir : "./save_folder/data"
 hf_save_dir : "/projectnb/pnn/.cache"
 
 # Training length and number of the generated tokens
-train_max_len : 1024
+train_max_len : 2048
 max_new_tokens : 512
 
 # Batch size
@@ -52,7 +52,7 @@ fp16 : False
 # NVIDIA architecture or using CPU (use_cpu) or Ascend NPU. This is an experimental API and it may change.
 bf16 : True
 # Number of update steps to accumulate the gradients
-gradient_accumulation_steps : 4
+gradient_accumulation_steps : 8
 # Initial learning rate
 learning_rate : 0.00002
 # Weight decay to apply to all layers except bias/LayerNorm weights

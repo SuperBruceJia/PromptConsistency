@@ -49,7 +49,7 @@ def model_initialize(config):
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(
         model_name,
-        cache_dir=save_dir,
+        # cache_dir=save_dir,
         model_max_length=train_max_len,
         add_eos_token=True,
         add_bos_token=True,
@@ -124,7 +124,7 @@ def trainer_loader(config, model, tokenizer, data_module, num_train_epochs):
         per_device_train_batch_size=train_batch_size,
         per_device_eval_batch_size=eval_batch_size,
         gradient_accumulation_steps=gradient_accumulation_steps,
-        gradient_checkpointing=True,
+        # gradient_checkpointing=True,
         optim=optim,
         logging_steps=logging_steps,
         learning_rate=learning_rate,
@@ -135,8 +135,8 @@ def trainer_loader(config, model, tokenizer, data_module, num_train_epochs):
         warmup_ratio=warmup_ratio,
         lr_scheduler_type=lr_scheduler_type,
         report_to="tensorboard",
-        save_steps=save_steps,
-        save_total_limit=1,
+        # save_steps=save_steps,
+        # save_total_limit=1,
     )
 
     # Set supervised fine-tuning parameters
