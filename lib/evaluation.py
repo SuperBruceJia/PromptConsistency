@@ -125,4 +125,3 @@ def gsm8k_test(config):
     torch.cuda.empty_cache()
     torch.distributed.destroy_process_group()
     print("Successfully delete the llm pipeline and free the GPU memory.\n")
-

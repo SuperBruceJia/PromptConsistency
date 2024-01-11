@@ -204,8 +204,14 @@ class WordPerturb:
         positions = [i for i, word in enumerate(sen_list) if word.lower() not in self.stop_words]
 
         # Choose random positions 1 and 2 for swapping
-        position_1 = random.sample(positions, self.num)
-        position_2 = random.sample(positions, self.num)
+        if self.num <= len(positions):
+            position_1 = random.sample(positions, self.num)
+            position_2 = random.sample(positions, self.num)
+        else:
+            position_1 = positions
+            random.shuffle(position_1)
+            position_2 = positions
+            random.shuffle(position_2)
 
         # Perform the character swaps
         for i in range(self.num):

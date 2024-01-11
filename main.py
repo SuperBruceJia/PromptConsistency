@@ -50,13 +50,17 @@ from utils.utils import CustomStream, load_config
 def main(config):
     """Run the program"""
     # Retrieve the pathes of needed hyperparameters
-    # ft_model = config.get("ft_model")
-    # test_path = config.get("test_path")
     save_dir = config.get("save_dir")
+    test_path = config.get("test_path")
     epochs = config.get("epochs")
 
     print("Initialize the model and tokenizer!")
     model, tokenizer = model_initialize(config)
+    model.save_pretrained(save_dir + '/adapter')
+
+    # Performance evaluation on the testing set
+    print("Evaluate the pretrained model's performance on the Testing Set")
+    gsm8k_test(config=config)
 
     for iterate in range(epochs):
         print("Training iteration %s" % str(iterate))

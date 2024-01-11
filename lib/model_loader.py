@@ -16,7 +16,11 @@ from transformers import (
     Trainer,
 )
 
-from utils.utils import add_special_token, embedding_resize
+from utils.utils import (
+    add_special_token,
+    embedding_resize,
+    print_parameters,
+)
 
 
 def model_initialize(config):
@@ -27,9 +31,9 @@ def model_initialize(config):
 
     Returns: model and tokenizer
     """
-    lora_alpha = config.get("lora_alpha")
-    lora_dropout = config.get("lora_dropout")
-    lora_r = config.get("lora_r")
+    # lora_alpha = config.get("lora_alpha")
+    # lora_dropout = config.get("lora_dropout")
+    # lora_r = config.get("lora_r")
     model_name = config.get("model_name")
     device_map = config.get("device_map")
     train_max_len = config.get("train_max_len")
@@ -73,20 +77,27 @@ def model_initialize(config):
     # Resize input token embeddings matrix of the model if new_num_tokens != config.vocab_size
     model.resize_token_embeddings(len(tokenizer))
 
-    lora_config = LoraConfig(
-        r=lora_r,
-        lora_alpha=lora_alpha,
-        lora_dropout=lora_dropout,
-        bias="none",
-        target_modules=[
-            "q_proj",
-            "k_proj",
-            "v_proj",
-        ],
-        task_type=TaskType.CAUSAL_LM,
-    )
-    model.add_adapter(lora_config, adapter_name="adapter")
+    # lora_config = LoraConfig(
+    #     r=lora_r,
+    #     lora_alpha=lora_alpha,
+    #     lora_dropout=lora_dropout,
+    #     bias="none",
+    #     target_modules=[
+    #         "q_proj",
+    #         "k_proj",
+    #         "v_proj",
+    #     ],
+    #     task_type=TaskType.CAUSAL_LM,
+    # )
+    # model.add_adapter(lora_config, adapter_name="adapter")
+    # model.enable_adapters()
+
+    # Load the Pre-trained LoRA Adapter
+    model.load_adapter("shuyuej/metamath_lora_llama2_7b_4_epoch")
     model.enable_adapters()
+    print('Number of trainable parameters of the Generator G after reloading LoRA!')
+    print_parameters(model)
+    print('\n')
 
     return model, tokenizer
 
