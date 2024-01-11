@@ -8,7 +8,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 
 import torch
-from peft import LoraConfig, TaskType
+# from peft import LoraConfig, TaskType
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
