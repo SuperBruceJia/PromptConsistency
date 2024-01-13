@@ -8,10 +8,6 @@
 # DEPENDENCY ACKNOWLEDGMENT
 # vLLM (Apache-2.0 license):
 # https://github.com/vllm-project/vllm and https://github.com/troph-team/vllm
-# Styleformer (Apache-2.0 license):
-# https://github.com/PrithivirajDamodaran/Styleformer
-# Parrot_Paraphraser (Apache-2.0 license):
-# https://github.com/PrithivirajDamodaran/Parrot_Paraphraser
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
