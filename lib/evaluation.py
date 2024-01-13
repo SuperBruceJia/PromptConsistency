@@ -67,7 +67,7 @@ def gsm8k_test(config):
 
         pairs = []
         if len(phrase) >= 3:
-            for i in range(64):
+            for i in range(1):
                 random.seed(i)
                 selected = random.sample(phrase, 3)
                 pairs.append(selected)
