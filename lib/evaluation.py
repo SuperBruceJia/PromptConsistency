@@ -57,28 +57,23 @@ def gsm8k_test(config):
 
         # Retrieved the original question
         ori_phrase = lines["original_question"][0]
+        phrase.append(ori_phrase)
 
         # Retrieved the paraphrased questions
         for q in lines["paraphrased_question"]:
             phrase.append(q)
-        phrase.append(ori_phrase)
         random.seed(0)
         random.shuffle(phrase)
 
         num_q = 3
         pairs = []
         if len(phrase) >= num_q:
-            # for i in range(1):
-            random.seed(0)
-            selections = random.sample(phrase, num_q)
+            for i in range(128):
+                random.seed(i)
+                selections = random.sample(phrase, num_q)
+                pairs.append(selections)
 
-            # Get all permutations of the list
-            all_perm = list(permutations(selections))
-            for perm in all_perm:
-                pairs.append(list(perm))
-
-            for item in range(len(pairs)):
-                pair = pairs[item]
+            for pair in pairs:
                 prompt = gsm8k_prompt(question=pair)
                 prompts.append(prompt)
         else:
