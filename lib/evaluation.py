@@ -71,10 +71,10 @@ def gsm8k_test(config):
         if len(phrase) >= num_q:
             # for i in range(1):
             random.seed(0)
-            selected = random.sample(phrase, num_q)
+            selections = random.sample(phrase, num_q)
 
             # Get all permutations of the list
-            all_perm = list(permutations(selected))
+            all_perm = list(permutations(selections))
             for perm in all_perm:
                 pairs.append(list(perm))
 
