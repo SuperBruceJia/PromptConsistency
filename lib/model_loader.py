@@ -101,7 +101,7 @@ def model_initialize(config):
 
     model.load_adapter("shuyuej/prompt_consistency_adapter")
     model.enable_adapters()
-    print('Number of trainable parameters of the Generator G after reloading LoRA!')
+    print('Number of trainable parameters after reloading LoRA!')
     print_parameters(model)
     print('\n')
 
