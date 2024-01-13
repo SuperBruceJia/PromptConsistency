@@ -43,6 +43,7 @@ def gsm8k_test(config):
     llm = LLM(model=llama_path, tensor_parallel_size=num_gpus, gpu_memory_utilization=0.80)
     lora.LoRAModel.from_pretrained(llm.llm_engine.workers[0].model, save_dir + '/adapter')
 
+    # Start to prepare prompts
     ids = dataset["id"]
     max_id = max(ids)
     acc = []
