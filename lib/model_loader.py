@@ -38,8 +38,8 @@ def model_initialize(config):
     device_map = config.get("device_map")
     train_max_len = config.get("train_max_len")
     hf_auth_token = config.get("hf_auth_token")
-    # save_dir = config.get("save_dir")
     llama_path = config.get("llama_path")
+    # save_dir = config.get("save_dir")
 
     # Load the base model
     model = AutoModelForCausalLM.from_pretrained(
@@ -98,6 +98,7 @@ def model_initialize(config):
     # print('Number of trainable parameters of the Generator G after reloading LoRA!')
     # print_parameters(model)
     # print('\n')
+
     model.load_adapter("shuyuej/prompt_consistency_adapter")
     model.enable_adapters()
     print('Number of trainable parameters of the Generator G after reloading LoRA!')

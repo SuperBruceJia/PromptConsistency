@@ -70,7 +70,7 @@ def gsm8k_test(config):
             for i in range(1):
                 random.seed(i)
                 selected = random.sample(phrase, 3)
-                pairs.append(selected)
+                pairs.append(selected)  # [[1, 2, 3]]
 
             for item in range(len(pairs)):
                 pair = pairs[item]
