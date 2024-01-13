@@ -5,7 +5,6 @@ import sys
 import time
 import random
 from collections import Counter
-from itertools import permutations
 
 import torch
 from datasets import load_dataset
