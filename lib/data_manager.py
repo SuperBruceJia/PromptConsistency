@@ -31,7 +31,8 @@ def dataset_maker(dataset):
         questions.append(lines["original_question"][0])
 
         # Randomly select K items from the list
-        num_q = random.randint(1, 5)
+        # num_q = random.randint(1, 5)
+        num_q = 3
         try:
             selected_q = random.sample(questions, num_q)
         except BaseException:
@@ -39,7 +40,6 @@ def dataset_maker(dataset):
             selected_q = random.sample(questions, num_q)
 
         answer = lines["answer_detail"][0]
-
         prompt = gsm8k_prompt(question=selected_q)
         new_dataset.append({"question": prompt, "answer": answer})
 

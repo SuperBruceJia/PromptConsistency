@@ -92,14 +92,14 @@ def model_initialize(config):
     # model.add_adapter(lora_config, adapter_name="adapter")
     # model.enable_adapters()
 
-    # # Load the Pre-trained LoRA Adapter
-    # model.load_adapter("shuyuej/metamath_lora_llama2_7b_3_epoch")
-    # model.enable_adapters()
-    # print_parameters(model)
-
-    model.load_adapter("shuyuej/prompt_consistency_adapter")
+    # Load the Pre-trained LoRA Adapter
+    model.load_adapter("shuyuej/metamath_lora_llama2_7b_3_epoch")
     model.enable_adapters()
     print_parameters(model)
+
+    # model.load_adapter("shuyuej/prompt_consistency_adapter")
+    # model.enable_adapters()
+    # print_parameters(model)
 
     return model, tokenizer
 

@@ -47,7 +47,7 @@ def main(config):
     """Run the program"""
     # Retrieve the pathes of needed hyperparameters
     save_dir = config.get("save_dir")
-    # epochs = config.get("epochs")
+    epochs = config.get("epochs")
 
     print("Initialize the model and tokenizer!")
     model, tokenizer = model_initialize(config)
@@ -57,25 +57,25 @@ def main(config):
     print("Evaluate the pretrained model's performance on the Testing Set")
     gsm8k_test(config=config)
 
-    # for iterate in range(epochs):
-    #     print("Training iteration %s" % str(iterate))
-    data = dataset_loader(tokenizer=tokenizer)
-    trainer = trainer_loader(
-        config,
-        model=model,
-        tokenizer=tokenizer,
-        data_module=data,
-        num_train_epochs=5
-    )
-    trainer.train()
-    trainer.model.save_pretrained(save_dir + '/adapter')
-    print('Successfully save the pre-trained adapter of the Generator G!')
-    tokenizer = trainer.tokenizer
-    tokenizer.save_pretrained(save_dir)
+    for iterate in range(epochs):
+        print("Training iteration %s" % str(iterate))
+        data = dataset_loader(tokenizer=tokenizer)
+        trainer = trainer_loader(
+            config,
+            model=model,
+            tokenizer=tokenizer,
+            data_module=data,
+            num_train_epochs=5
+        )
+        trainer.train()
+        trainer.model.save_pretrained(save_dir + '/adapter')
+        print('Successfully save the pre-trained adapter of the Generator G!')
+        tokenizer = trainer.tokenizer
+        tokenizer.save_pretrained(save_dir)
 
-    # Performance evaluation on the testing set
-    print("Evaluate the model's performance on the Testing Set")
-    gsm8k_test(config=config)
+        # Performance evaluation on the testing set
+        print("Evaluate the model's performance on the Testing Set")
+        gsm8k_test(config=config)
 
 
 if __name__ == "__main__":

@@ -65,6 +65,7 @@ def gsm8k_test(config):
             random.seed(0)
             selections = random.sample(phrase, num_q)
             selections.append(ori_phrase)
+
             random.seed(0)
             random.shuffle(selections)
 
