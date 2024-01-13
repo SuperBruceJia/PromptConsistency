@@ -5,6 +5,7 @@ import sys
 import time
 import random
 from collections import Counter
+from itertools import permutations
 
 import torch
 from datasets import load_dataset
@@ -24,8 +25,6 @@ MAX_INT = sys.maxsize
 def gsm8k_test(config):
     """
     Codes Credits: https://github.com/meta-math/MetaMath/blob/main/eval_gsm8k.py
-    :param data_path: dataset path
-    :param file_path: save file path and file name
     """
     start_t = time.time()
     max_new_tokens = config.get("max_new_tokens")
@@ -56,24 +55,25 @@ def gsm8k_test(config):
 
         # Retrieved the original question
         ori_phrase = lines["original_question"][0]
-        phrase.append(ori_phrase)
 
         # Retrieved the paraphrased questions
         for q in lines["paraphrased_question"]:
             phrase.append(q)
-        random.seed(0)
-        random.shuffle(phrase)
 
         num_q = 3
-        pairs = []
         if len(phrase) >= num_q:
-            for i in range(128):
-                random.seed(i)
-                selections = random.sample(phrase, num_q)
-                pairs.append(selections)
+            random.seed(0)
+            selections = random.sample(phrase, num_q)
+            selections.append(ori_phrase)
+            random.seed(0)
+            random.shuffle(selections)
 
-            for pair in pairs:
-                prompt = gsm8k_prompt(question=pair)
+            # Get all permutations of length num_q
+            combinations = permutations(selections, num_q)
+
+            # Get each combination
+            for combo in combinations:
+                prompt = gsm8k_prompt(question=list(combo))
                 prompts.append(prompt)
         else:
             prompt = gsm8k_prompt(question=phrase)
@@ -108,6 +108,7 @@ def gsm8k_test(config):
         ans = answer.split('#### ')[1]
         label = int(ans.replace(',', ''))
 
+        # Generate results
         preds = []
         completions = llm.generate(prompts, sampling_params)
         for output in completions:
@@ -115,7 +116,7 @@ def gsm8k_test(config):
             pred = extract_number(gen)
             preds.append(pred)
 
-        print('Regarding testing sample ID:', id, ', successfully finished generating', len(prompts), 'samples!')
+        print('Testing ID:', id, ', successfully finished generating', len(prompts), 'samples!')
 
         # Count occurrences of each element
         counts = Counter(preds)
