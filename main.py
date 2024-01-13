@@ -58,9 +58,10 @@ def main(config):
     model, tokenizer = model_initialize(config)
     model.save_pretrained(save_dir + '/adapter')
 
-    # # Performance evaluation on the testing set
-    # print("Evaluate the pretrained model's performance on the Testing Set")
-    # gsm8k_test(config=config)
+    # Performance evaluation on the testing set
+    print("Evaluate the pretrained model's performance on the Testing Set")
+    save_file = result_dir + '/' + 'evaluation_invalid_outputs_list.txt'
+    gsm8k_test(config=config, file_path=save_file, data_path=test_path)
 
     for iterate in range(epochs):
         print("Training iteration %s" % str(iterate))

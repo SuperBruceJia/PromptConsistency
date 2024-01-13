@@ -93,7 +93,12 @@ def model_initialize(config):
     # model.enable_adapters()
 
     # Load the Pre-trained LoRA Adapter
-    model.load_adapter("shuyuej/metamath_lora_llama2_7b_4_epoch")
+    # model.load_adapter("shuyuej/metamath_lora_llama2_7b_4_epoch")
+    # model.enable_adapters()
+    # print('Number of trainable parameters of the Generator G after reloading LoRA!')
+    # print_parameters(model)
+    # print('\n')
+    model.load_adapter("shuyuej/prompt_consistency_adapter")
     model.enable_adapters()
     print('Number of trainable parameters of the Generator G after reloading LoRA!')
     print_parameters(model)
