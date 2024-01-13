@@ -50,7 +50,6 @@ def gsm8k_test(config):
     acc = []
     for id in range(max_id):
         prompts = []
-        responses = []
         phrase = []
 
         # Select all lines where 'id' is equal to id
@@ -115,16 +114,14 @@ def gsm8k_test(config):
         ans = answer.split('#### ')[1]
         label = int(ans.replace(',', ''))
 
+        preds = []
         completions = llm.generate(prompts, sampling_params)
         for output in completions:
             gen = output.outputs[0].text
-            responses.append(gen)
+            pred = extract_number(gen)
+            preds.append(pred)
 
         print('Regarding testing sample ID:', id, ', successfully finished generating', len(prompts), 'samples!')
-        preds = []
-        for response_item in responses:
-            pred = extract_number(response_item)
-            preds.append(pred)
 
         # Count occurrences of each element
         counts = Counter(preds)
