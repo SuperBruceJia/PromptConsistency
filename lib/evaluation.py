@@ -66,19 +66,17 @@ def gsm8k_test(config):
         random.seed(0)
         random.shuffle(phrase)
 
+        num_q = 3
         pairs = []
-        if len(phrase) >= 3:
+        if len(phrase) >= num_q:
             # for i in range(1):
             random.seed(0)
-            selected = random.sample(phrase, 3)
+            selected = random.sample(phrase, num_q)
 
             # Get all permutations of the list
             all_perm = list(permutations(selected))
-
-            # Print the result
             for perm in all_perm:
-                # print(list(perm))
-                pairs.append(list(perm))  # [[1, 2, 3]]
+                pairs.append(list(perm))
 
             for item in range(len(pairs)):
                 pair = pairs[item]
