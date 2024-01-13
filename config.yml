@@ -1,7 +1,7 @@
 # Model info
 model_name : "meta-llama/Llama-2-7b-hf"
 ft_model : "Llama-2-7b-sft"
-hf_auth_token : "YOUR_OWN_HUGGING_FACE_API"
+hf_auth_token : "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"
 llama_path : "/projectnb/pnn/llama/llama-2-7b-hf"
 
 # Dataset path

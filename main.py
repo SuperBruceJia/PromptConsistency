@@ -51,7 +51,6 @@ def main(config):
     """Run the program"""
     # Retrieve the pathes of needed hyperparameters
     save_dir = config.get("save_dir")
-    test_path = config.get("test_path")
     epochs = config.get("epochs")
 
     print("Initialize the model and tokenizer!")
@@ -60,8 +59,7 @@ def main(config):
 
     # Performance evaluation on the testing set
     print("Evaluate the pretrained model's performance on the Testing Set")
-    save_file = result_dir + '/' + 'evaluation_invalid_outputs_list.txt'
-    gsm8k_test(config=config, file_path=save_file, data_path=test_path)
+    gsm8k_test(config=config)
 
     for iterate in range(epochs):
         print("Training iteration %s" % str(iterate))
