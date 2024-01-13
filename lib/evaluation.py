@@ -5,6 +5,7 @@ import sys
 import time
 import random
 from collections import Counter
+from itertools import permutations
 
 import torch
 from datasets import load_dataset
@@ -67,10 +68,17 @@ def gsm8k_test(config):
 
         pairs = []
         if len(phrase) >= 3:
-            for i in range(1):
-                random.seed(i)
-                selected = random.sample(phrase, 3)
-                pairs.append(selected)  # [[1, 2, 3]]
+            # for i in range(1):
+            random.seed(0)
+            selected = random.sample(phrase, 3)
+
+            # Get all permutations of the list
+            all_perm = list(permutations(selected))
+
+            # Print the result
+            for perm in all_perm:
+                # print(list(perm))
+                pairs.append(list(perm))  # [[1, 2, 3]]
 
             for item in range(len(pairs)):
                 pair = pairs[item]
