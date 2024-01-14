@@ -41,7 +41,7 @@ def gsm8k_test_one(config):
     with open(data_path, "r+", encoding="utf8") as f:
         for idx, item in enumerate(jsonlines.Reader(f)):
             # Get the prompt template + question --> gsm8k_ins
-            temp_ins = gsm8k_prompt(question=[item["question"]])
+            temp_ins = gsm8k_prompt(question=[item["question"]], train=False)
             instances.append(temp_ins)
 
             # Get the label answer --> gsm8k_answers
@@ -153,7 +153,7 @@ def gsm8k_test_multiple(config):
 
             for i in range(len(pairs)):
                 pair = pairs[i]
-                prompt = gsm8k_prompt(question=pair)
+                prompt = gsm8k_prompt(question=pair, train=False)
                 prompts.append(prompt)
 
             number = 64
@@ -165,7 +165,7 @@ def gsm8k_test_multiple(config):
             pairs = phrase
             pairs.append(ori_phrase)
             pairs.reverse()
-            prompt = gsm8k_prompt(question=pairs)
+            prompt = gsm8k_prompt(question=pairs, train=False)
             prompts.append(prompt)
 
         # Get the label answer --> gsm8k_answers

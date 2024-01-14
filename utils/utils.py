@@ -176,7 +176,7 @@ class CustomStream:
         pass
 
 
-def gsm8k_prompt(question):
+def gsm8k_prompt(question, train=True):
     """The formatting prompts function for GSM8K database
 
     :param question: Question (task description)
@@ -192,7 +192,10 @@ def gsm8k_prompt(question):
         prompt += ":\n"
         prompt += q
 
-    prompt += "\n\n### Response: Let's think step by step."
+    if train:
+        prompt += "\n\n### Response:"
+    else:
+        prompt += "\n\n### Response: Let's think step by step."
 
     return prompt
 

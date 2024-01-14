@@ -39,7 +39,7 @@ def dataset_maker(dataset):
             selected_q = random.sample(questions, num_q)
 
         answer = lines["answer_detail"][0]
-        prompt = gsm8k_prompt(question=selected_q)
+        prompt = gsm8k_prompt(question=selected_q, train=True)
         new_dataset.append({"question": prompt, "answer": answer})
 
     random.shuffle(new_dataset)
