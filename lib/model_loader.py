@@ -19,7 +19,7 @@ from transformers import (
 from utils.utils import (
     add_special_token,
     embedding_resize,
-    print_parameters,
+    # print_parameters,
 )
 
 
@@ -128,7 +128,6 @@ def trainer_loader(config, model, tokenizer, data_module, num_train_epochs):
     fp16 = config.get("fp16")
     bf16 = config.get("bf16")
     save_dir = config.get("save_dir")
-    # save_steps = config.get("save_steps")
 
     # Set training parameters
     arguments = TrainingArguments(
@@ -148,8 +147,7 @@ def trainer_loader(config, model, tokenizer, data_module, num_train_epochs):
         warmup_ratio=warmup_ratio,
         lr_scheduler_type=lr_scheduler_type,
         report_to="tensorboard",
-        # save_steps=save_steps,
-        # save_total_limit=1,
+        save_strategy="no",
     )
 
     # Set supervised fine-tuning parameters
