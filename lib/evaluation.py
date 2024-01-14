@@ -5,7 +5,7 @@ import sys
 import time
 import random
 from collections import Counter
-from itertools import permutations
+# from itertools import permutations
 import jsonlines
 
 import torch
