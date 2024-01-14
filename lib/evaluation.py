@@ -124,49 +124,49 @@ def gsm8k_test_multiple(config):
         for q in lines["paraphrased_question"]:
             phrase.append(q)
 
-        num_q = 3
-        if len(phrase) >= num_q:
-            random.seed(0)
-            selections = random.sample(phrase, num_q)
-            selections.append(ori_phrase)
-
-            random.seed(0)
-            random.shuffle(selections)
-
-            # Get all permutations of length num_q
-            combinations = permutations(selections, num_q)
-
-            # Get each combination
-            for combo in combinations:
-                prompt = gsm8k_prompt(question=list(combo))
-                prompts.append(prompt)
-        else:
-            prompt = gsm8k_prompt(question=phrase)
-            prompts.append(prompt)
-
-        # pairs = []
-        # if len(phrase) >= 2:
-        #     for i in range(len(phrase)):
-        #         for j in range(i + 1, len(phrase)):
-        #             pairs.append([ori_phrase, phrase[i], phrase[j]])
-        #             pairs.append([ori_phrase, phrase[j], phrase[i]])
+        # num_q = 3
+        # if len(phrase) >= num_q:
+        #     random.seed(0)
+        #     selections = random.sample(phrase, num_q)
+        #     selections.append(ori_phrase)
         #
-        #     for i in range(len(pairs)):
-        #         pair = pairs[i]
-        #         prompt = gsm8k_prompt(question=pair)
+        #     random.seed(0)
+        #     random.shuffle(selections)
+        #
+        #     # Get all permutations of length num_q
+        #     combinations = permutations(selections, num_q)
+        #
+        #     # Get each combination
+        #     for combo in combinations:
+        #         prompt = gsm8k_prompt(question=list(combo))
         #         prompts.append(prompt)
-        #
-        #     number = 64
-        #     if len(prompts) >= number:
-        #         random.seed(0)
-        #         prompts = random.sample(prompts, number)
-        #
         # else:
-        #     pairs = phrase
-        #     pairs.append(ori_phrase)
-        #     pairs.reverse()
-        #     prompt = gsm8k_prompt(question=pairs)
+        #     prompt = gsm8k_prompt(question=phrase)
         #     prompts.append(prompt)
+
+        pairs = []
+        if len(phrase) >= 2:
+            for i in range(len(phrase)):
+                for j in range(i + 1, len(phrase)):
+                    pairs.append([ori_phrase, phrase[i], phrase[j]])
+                    pairs.append([ori_phrase, phrase[j], phrase[i]])
+
+            for i in range(len(pairs)):
+                pair = pairs[i]
+                prompt = gsm8k_prompt(question=pair)
+                prompts.append(prompt)
+
+            number = 64
+            if len(prompts) >= number:
+                random.seed(0)
+                prompts = random.sample(prompts, number)
+
+        else:
+            pairs = phrase
+            pairs.append(ori_phrase)
+            pairs.reverse()
+            prompt = gsm8k_prompt(question=pairs)
+            prompts.append(prompt)
 
         # Get the label answer --> gsm8k_answers
         answer = lines["answer_detail"][0]

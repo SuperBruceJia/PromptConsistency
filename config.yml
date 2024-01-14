@@ -20,8 +20,8 @@ train_max_len : 4096
 max_new_tokens : 512
 
 # Batch size
-train_batch_size : 4
-eval_batch_size : 4
+train_batch_size : 2
+eval_batch_size : 2
 
 # Number of training epochs
 epochs : 100
@@ -53,14 +53,14 @@ fp16 : False
 # NVIDIA architecture or using CPU (use_cpu) or Ascend NPU. This is an experimental API and it may change.
 bf16 : True
 # Number of update steps to accumulate the gradients
-gradient_accumulation_steps : 8
+gradient_accumulation_steps : 4
 # Initial learning rate
 learning_rate : 0.00002
 # Weight decay to apply to all layers except bias/LayerNorm weights
 weight_decay : 0.
 
 # Optimizer, Learning rate schedule, warm-up ratio
-optim : "adamw_torch"
+optim : "paged_adamw_32bit"
 lr_scheduler_type : "cosine"
 warmup_ratio : 0.03
 
