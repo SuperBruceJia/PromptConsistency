@@ -36,7 +36,7 @@ def gsm8k_test(config):
     dataset = load_dataset("shuyuej/temporary_testing_data")
     dataset = dataset["test"]
 
-    # Load LLM
+    # Load LLM to generate response
     stop_tokens = stop_token_list()
     sampling_params = SamplingParams(temperature=0.0, top_p=1, max_tokens=max_new_tokens, stop=stop_tokens)
     llm = LLM(model=llama_path, tensor_parallel_size=num_gpus, gpu_memory_utilization=0.80)

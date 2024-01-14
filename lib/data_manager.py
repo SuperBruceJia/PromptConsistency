@@ -136,10 +136,16 @@ class SupervisedDataset(Dataset):
         return len(self.sources)
 
     def naive__getitem__(self, i):
-        return dict(input_ids=self.input_ids[i], labels=self.labels[i])
+        return dict(
+            input_ids=self.input_ids[i],
+            labels=self.labels[i]
+        )
 
     def __getitem__(self, i):
-        return dict(input_ids=self.sources[i], labels=self.targets[i])
+        return dict(
+            input_ids=self.sources[i],
+            labels=self.targets[i]
+        )
 
 
 @dataclass
@@ -153,10 +159,14 @@ class DataCollator(object):
         input_ids, labels = tuple([instance[key] for instance in instances] for key in ("input_ids", "labels"))
 
         input_ids = torch.nn.utils.rnn.pad_sequence(
-            input_ids, batch_first=True, padding_value=self.tokenizer.pad_token_id
+            input_ids,
+            batch_first=True,
+            padding_value=self.tokenizer.pad_token_id
         )
         labels = torch.nn.utils.rnn.pad_sequence(
-            labels, batch_first=True, padding_value=IGNORE_INDEX
+            labels,
+            batch_first=True,
+            padding_value=IGNORE_INDEX
         )
 
         return dict(
