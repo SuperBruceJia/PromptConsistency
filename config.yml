@@ -20,8 +20,8 @@ train_max_len : 4096
 max_new_tokens : 512
 
 # Batch size
-train_batch_size : 2
-eval_batch_size : 2
+train_batch_size : 1
+eval_batch_size : 1
 
 # Number of training epochs
 epochs : 100
