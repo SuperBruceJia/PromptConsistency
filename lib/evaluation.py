@@ -151,8 +151,7 @@ def gsm8k_test_multiple(config):
                     pairs.append([ori_phrase, phrase[i], phrase[j]])
                     pairs.append([ori_phrase, phrase[j], phrase[i]])
 
-            for i in range(len(pairs)):
-                pair = pairs[i]
+            for pair in pairs:
                 prompt = gsm8k_prompt(question=pair, train=False)
                 prompts.append(prompt)
 
