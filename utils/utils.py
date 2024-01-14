@@ -7,6 +7,8 @@ import json
 import yaml
 from fraction import Fraction
 
+import transformers
+
 from data_processing import paragraph_split
 
 DEFAULT_BOS_TOKEN = "<s>"
@@ -223,3 +225,12 @@ def backward(sentence):
     sentence = "Given the following statements, " + sentence
 
     return sentence
+
+
+def model_saver(trainer: transformers.Trainer, output_dir: str):
+    """Collects the state dict and dump to disk."""
+    state_dict = trainer.model.state_dict()
+    if trainer.args.should_save:
+        cpu_state_dict = {key: value.cpu() for key, value in state_dict.items()}
+        del state_dict
+        trainer._save(output_dir, state_dict=cpu_state_dict)  # noqa

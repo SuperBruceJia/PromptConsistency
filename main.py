@@ -40,7 +40,11 @@ from huggingface_hub import login
 from lib.model_loader import model_initialize, trainer_loader
 from lib.data_manager import dataset_loader
 from lib.evaluation import gsm8k_test
-from utils.utils import CustomStream, load_config
+from utils.utils import (
+    CustomStream,
+    load_config,
+    model_saver,
+)
 
 
 def main(config):
@@ -51,11 +55,11 @@ def main(config):
 
     print("Initialize the model and tokenizer!")
     model, tokenizer = model_initialize(config)
-    model.save_pretrained(save_dir + '/adapter')
+    # model.save_pretrained(save_dir + '/adapter')
 
-    # Performance evaluation on the testing set
-    print("Evaluate the pretrained model's performance on the Testing Set")
-    gsm8k_test(config=config)
+    # # Performance evaluation on the testing set
+    # print("Evaluate the pretrained model's performance on the Testing Set")
+    # gsm8k_test(config=config)
 
     for iterate in range(epochs):
         print("Training iteration %s" % str(iterate))
@@ -68,8 +72,10 @@ def main(config):
             num_train_epochs=5
         )
         trainer.train()
-        trainer.model.save_pretrained(save_dir + '/adapter')
-        print('Successfully save the pre-trained adapter of the Generator G!')
+        trainer.save_state()
+        model_saver(trainer=trainer, output_dir=save_dir)
+        # trainer.model.save_pretrained(save_dir + '/adapter')
+        # print('Successfully save the pre-trained adapter of the Generator G!')
         tokenizer = trainer.tokenizer
         tokenizer.save_pretrained(save_dir)
 

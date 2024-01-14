@@ -59,10 +59,10 @@ def model_initialize(config):
         add_bos_token=True,
         padding='longest',
         padding_side="right",
-        truncation=True,
+        # truncation=True,
         return_tensors="pt",
         use_fast=False,
-        trust_remote_code=True,
+        # trust_remote_code=True,
         use_auth_token=hf_auth_token,
         device_map=device_map,
     )
@@ -75,7 +75,7 @@ def model_initialize(config):
     tokenizer = add_special_token(tokenizer)
 
     # Resize input token embeddings matrix of the model if new_num_tokens != config.vocab_size
-    model.resize_token_embeddings(len(tokenizer))
+    # model.resize_token_embeddings(len(tokenizer))
 
     # lora_config = LoraConfig(
     #     r=lora_r,
@@ -92,10 +92,10 @@ def model_initialize(config):
     # model.add_adapter(lora_config, adapter_name="adapter")
     # model.enable_adapters()
 
-    # Load the Pre-trained LoRA Adapter
-    model.load_adapter("shuyuej/metamath_lora_llama2_7b_3_epoch")
-    model.enable_adapters()
-    print_parameters(model)
+    # # Load the Pre-trained LoRA Adapter
+    # model.load_adapter("shuyuej/metamath_lora_llama2_7b_3_epoch")
+    # model.enable_adapters()
+    # print_parameters(model)
 
     # model.load_adapter("shuyuej/prompt_consistency_adapter")
     # model.enable_adapters()

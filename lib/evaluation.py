@@ -10,7 +10,7 @@ from itertools import permutations
 import torch
 from datasets import load_dataset
 from vllm import LLM, SamplingParams
-from vllm.model_executor.adapters import lora
+# from vllm.model_executor.adapters import lora
 from vllm.model_executor.parallel_utils.parallel_state import destroy_model_parallel
 
 from utils.utils import (
@@ -30,7 +30,7 @@ def gsm8k_test(config):
     max_new_tokens = config.get("max_new_tokens")
     save_dir = config.get("save_dir")
     num_gpus = config.get("num_gpus")
-    llama_path = config.get("llama_path")
+    # llama_path = config.get("llama_path")
 
     # Load dataset
     dataset = load_dataset("shuyuej/temporary_testing_data")
@@ -39,8 +39,8 @@ def gsm8k_test(config):
     # Load LLM to generate response
     stop_tokens = stop_token_list()
     sampling_params = SamplingParams(temperature=0.0, top_p=1, max_tokens=max_new_tokens, stop=stop_tokens)
-    llm = LLM(model=llama_path, tensor_parallel_size=num_gpus, gpu_memory_utilization=0.80)
-    lora.LoRAModel.from_pretrained(llm.llm_engine.workers[0].model, save_dir + '/adapter')
+    llm = LLM(model=save_dir, tensor_parallel_size=num_gpus, gpu_memory_utilization=0.80)
+    # lora.LoRAModel.from_pretrained(llm.llm_engine.workers[0].model, save_dir + '/adapter')
 
     # Start to prepare prompts
     ids = dataset["id"]
