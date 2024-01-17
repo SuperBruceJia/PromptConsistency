@@ -39,14 +39,10 @@ from huggingface_hub import login
 
 from lib.model_loader import model_initialize, trainer_loader
 from lib.data_manager import dataset_loader
-from lib.evaluation import (
-    gsm8k_test_one,
-    gsm8k_test_multiple,
-)
+from lib.evaluation import gsm8k_test
 from utils.utils import (
     CustomStream,
     load_config,
-    model_saver,
 )
 
 
@@ -63,8 +59,7 @@ def main(config):
 
     # Performance evaluation on the testing set
     print("Evaluate the pretrained model's performance on the Testing Set")
-    gsm8k_test_one(config=config)
-    gsm8k_test_multiple(config=config)
+    gsm8k_test(config=config)
 
     for iterate in range(epochs):
         print("Training iteration %s" % str(iterate))
@@ -77,8 +72,6 @@ def main(config):
             num_train_epochs=3
         )
         trainer.train()
-        # trainer.save_state()
-        # model_saver(trainer=trainer, output_dir=save_dir)
         trainer.model.save_pretrained(save_dir + '/adapter')
         print('Successfully save the fine-tuned adapter!')
         tokenizer = trainer.tokenizer
@@ -86,8 +79,7 @@ def main(config):
 
         # Performance evaluation on the testing set
         print("Evaluate the model's performance on the Testing Set")
-        gsm8k_test_one(config=config)
-        gsm8k_test_multiple(config=config)
+        gsm8k_test(config=config)
 
 
 if __name__ == "__main__":

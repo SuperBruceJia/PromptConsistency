@@ -14,27 +14,29 @@ nltk.download('wordnet', download_dir="./save_folder/nltk")
 special_symbols = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
 
 # Stop words list
-stop_words = ['i', 'me', 'my', 'myself', 'we', 'our',
-              'ours', 'ourselves', 'you', 'your', 'yours',
-              'yourself', 'yourselves', 'he', 'him', 'his',
-              'himself', 'she', 'her', 'hers', 'herself',
-              'it', 'its', 'itself', 'they', 'them', 'their',
-              'theirs', 'themselves', 'what', 'which', 'who',
-              'whom', 'this', 'that', 'these', 'those', 'am',
-              'is', 'are', 'was', 'were', 'be', 'been', 'being',
-              'have', 'has', 'had', 'having', 'do', 'does', 'did',
-              'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or',
-              'because', 'as', 'until', 'while', 'of', 'at',
-              'by', 'for', 'with', 'about', 'against', 'between',
-              'into', 'through', 'during', 'before', 'after',
-              'above', 'below', 'to', 'from', 'up', 'down', 'in',
-              'out', 'on', 'off', 'over', 'under', 'again',
-              'further', 'then', 'once', 'here', 'there', 'when',
-              'where', 'why', 'how', 'all', 'any', 'both', 'each',
-              'few', 'more', 'most', 'other', 'some', 'such', 'no',
-              'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too',
-              'very', 's', 't', 'can', 'will', 'just', 'don',
-              'should', 'now']
+stop_words = [
+    'i', 'me', 'my', 'myself', 'we', 'our',
+    'ours', 'ourselves', 'you', 'your', 'yours',
+    'yourself', 'yourselves', 'he', 'him', 'his',
+    'himself', 'she', 'her', 'hers', 'herself',
+    'it', 'its', 'itself', 'they', 'them', 'their',
+    'theirs', 'themselves', 'what', 'which', 'who',
+    'whom', 'this', 'that', 'these', 'those', 'am',
+    'is', 'are', 'was', 'were', 'be', 'been', 'being',
+    'have', 'has', 'had', 'having', 'do', 'does', 'did',
+    'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or',
+    'because', 'as', 'until', 'while', 'of', 'at',
+    'by', 'for', 'with', 'about', 'against', 'between',
+    'into', 'through', 'during', 'before', 'after',
+    'above', 'below', 'to', 'from', 'up', 'down', 'in',
+    'out', 'on', 'off', 'over', 'under', 'again',
+    'further', 'then', 'once', 'here', 'there', 'when',
+    'where', 'why', 'how', 'all', 'any', 'both', 'each',
+    'few', 'more', 'most', 'other', 'some', 'such', 'no',
+    'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too',
+    'very', 's', 't', 'can', 'will', 'just', 'don',
+    'should', 'now',
+]
 
 
 def get_synonyms(word):
@@ -204,6 +206,8 @@ class WordPerturb:
         positions = [i for i, word in enumerate(sen_list) if word.lower() not in self.stop_words]
 
         # Choose random positions 1 and 2 for swapping
+        # position_1 = random.sample(positions, self.num)
+        # position_2 = random.sample(positions, self.num)
         if self.num <= len(positions):
             position_1 = random.sample(positions, self.num)
             position_2 = random.sample(positions, self.num)

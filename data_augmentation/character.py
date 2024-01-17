@@ -123,6 +123,7 @@ class CharacterPerturb:
     def __init__(self, sentence, level):
         # The sentence to be perturbed
         self.data = sentence
+
         # The perturbation level to be implemented
         self.percent = level
 
@@ -245,7 +246,8 @@ class CharacterPerturb:
 
         # Create a list of positions that correspond to characters or numbers
         positions = [i for i, char in enumerate(self.data) if char.isalnum()]
-        positions = random.sample(positions, num)
+        if len(positions) >= num:
+            positions = random.sample(positions, num)
 
         # Substitute the chosen characters with near keyboard characters
         for index in positions:
@@ -273,7 +275,8 @@ class CharacterPerturb:
 
         # Create a list of positions that correspond to characters or numbers
         positions = [i for i, char in enumerate(self.data) if char.isalnum()]
-        positions = random.sample(positions, num)
+        if len(positions) >= num:
+            positions = random.sample(positions, num)
 
         # Substitute the chosen characters with common OCR errors
         for index in positions:

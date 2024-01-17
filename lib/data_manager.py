@@ -8,7 +8,7 @@ import torch
 from torch.utils.data import Dataset
 from datasets import load_dataset, set_caching_enabled
 
-from utils.utils import gsm8k_prompt
+from utils.utils import gsm8k_prompt, perturbation
 
 IGNORE_INDEX = -100
 
@@ -37,6 +37,9 @@ def dataset_maker(dataset):
         except BaseException:
             num_q = random.randint(1, len(questions))
             selected_q = random.sample(questions, num_q)
+
+        for i in range(len(selected_q)):
+            selected_q[i] = perturbation(sen=selected_q[i], ratio=0.10)
 
         answer = lines["answer_detail"][0]
         prompt = gsm8k_prompt(question=selected_q, train=True)

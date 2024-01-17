@@ -1,15 +1,18 @@
 # coding=utf-8
 
-import io
-import os
 import re
-import json
 import yaml
+import random
 from fraction import Fraction
 
 import transformers
 
 from data_processing import paragraph_split
+
+from data_processing.paragraph_split import paragraph_splitter
+from data_augmentation.character import CharacterPerturb
+from data_augmentation.word import WordPerturb
+from data_augmentation.sentence import SentencePerturb
 
 DEFAULT_BOS_TOKEN = "<s>"
 DEFAULT_EOS_TOKEN = "</s>"
@@ -237,3 +240,148 @@ def model_saver(trainer: transformers.Trainer, output_dir: str):
         cpu_state_dict = {key: value.cpu() for key, value in state_dict.items()}
         del state_dict
         trainer._save(output_dir, state_dict=cpu_state_dict)  # noqa
+
+
+def perturbation(sen, ratio):
+    if random.random() >= ratio:
+        pass
+    else:
+        # Copy the original sentence
+        ori_sen = sen[:]
+
+        # Split the paragraph into sentences
+        sens = paragraph_splitter(paragraph=sen)
+
+        if len(sens) == 0 or len(sens) == 1:
+            return ori_sen
+        else:
+            sen_out = []
+            for i in range(len(sens) - 1):
+                sen = sens[i]
+                level = random.sample(["char_replace",
+                                       "char_delete",
+                                       "char_insert",
+                                       "char_swap",
+                                       "char_keyboard",
+                                       "char_ocr",
+                                       "word_replace",
+                                       "word_delete",
+                                       "word_insert",
+                                       "word_swap",
+                                       "word_split",
+                                       "word_punctuation"], 1)[0]
+
+                noise_ratio = random.sample([0.01, 0.05, 0.10, 0.15, 0.20], 1)[0]
+                character_tool = CharacterPerturb(sentence=sen, level=noise_ratio)
+                word_tool = WordPerturb(sentence=sen, level=noise_ratio)
+
+                if level == "char_replace":
+                    sen = character_tool.character_replacement()
+                elif level == "char_delete":
+                    sen = character_tool.character_deletion()
+                elif level == "char_insert":
+                    sen = character_tool.character_insertion()
+                elif level == "char_swap":
+                    sen = character_tool.character_swap()
+                elif level == "char_keyboard":
+                    sen = character_tool.keyboard_typos()
+                elif level == "char_ocr":
+                    sen = character_tool.optical_character_recognition()
+                elif level == "word_replace":
+                    sen = word_tool.synonym_replacement()
+                elif level == "word_delete":
+                    sen = word_tool.word_deletion()
+                elif level == "word_insert":
+                    sen = word_tool.word_insertion()
+                elif level == "word_swap":
+                    sen = word_tool.word_swap()
+                elif level == "word_split":
+                    sen = word_tool.word_split()
+                elif level == "word_punctuation":
+                    sen = word_tool.insert_punctuation()
+
+                sen_out.append(sen)
+
+            try:
+                sen_out.append(sens[-1])
+                if len(sen_out) > 1 and type(sen_out) == list:
+                    sen = ' '.join(sen_out)
+                elif len(sen_out) == 1 and type(sen_out) == list:
+                    sen = sen_out[0]
+                else:
+                    sen = sen_out
+            except IndexError:
+                print("Index error for the last sentence!")
+                return ori_sen
+
+    return sen
+
+
+def evaluation_augmentation(sen):
+    # Copy the original sentence
+    ori_sen = sen[:]
+
+    # Split the paragraph into sentences
+    sens = paragraph_splitter(paragraph=sen)
+
+    if len(sens) == 0 or len(sens) == 1:
+        return ori_sen
+    else:
+        sen_out = []
+        for i in range(len(sens) - 1):
+            sen = sens[i]
+            sentence_tool = SentencePerturb(sentence=sen)
+
+            level = random.sample(["bt_hugging_face", "bt_google", "formal",
+                                   "casual", "passive", "active", "paraphrase"], 1)[0]
+
+            if level == "bt_hugging_face":
+                sen = sentence_tool.back_translation_hugging_face()
+            elif level == "bt_google":
+                sen = sentence_tool.back_translation_google()
+            elif level == "formal":
+                sen = sentence_tool.formal()
+            elif level == "casual":
+                sen = sentence_tool.casual()
+            elif level == "passive":
+                sen = sentence_tool.passive()
+            elif level == "active":
+                sen = sentence_tool.active()
+            else:
+                sen = sentence_tool.paraphrase()
+
+            while sen is None:
+                level = random.sample(["bt_hugging_face", "bt_google", "formal",
+                                       "casual", "passive", "active", "paraphrase"], 1)[0]
+
+                if level == "bt_hugging_face":
+                    sen = sentence_tool.back_translation_hugging_face()
+                elif level == "bt_google":
+                    sen = sentence_tool.back_translation_google()
+                elif level == "formal":
+                    sen = sentence_tool.formal()
+                elif level == "casual":
+                    sen = sentence_tool.casual()
+                elif level == "passive":
+                    sen = sentence_tool.passive()
+                elif level == "active":
+                    sen = sentence_tool.active()
+                else:
+                    sen = sentence_tool.paraphrase()
+
+            sen_out.append(sen)
+
+        try:
+            sen_out.append(sens[-1])
+            if len(sen_out) > 1 and type(sen_out) == list:
+                sen = ' '.join(sen_out)
+            elif len(sen_out) == 1 and type(sen_out) == list:
+                sen = sen_out[0]
+            else:
+                sen = sen_out
+
+        except IndexError:
+            print("Index error for the last sentence!")
+            return ori_sen
+
+        return sen
