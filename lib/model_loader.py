@@ -8,7 +8,7 @@
 # https://www.apache.org/licenses/LICENSE-2.0
 
 import torch
-# from peft import LoraConfig, TaskType
+from peft import LoraConfig, TaskType
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -19,21 +19,21 @@ from transformers import (
 from utils.utils import (
     add_special_token,
     embedding_resize,
-    # print_parameters,
+    print_parameters,
 )
 
 
 def model_initialize(config):
     """
-    Initialize Generator G
+    Initialize model
     Args:
         config: the YAML configuration file
 
     Returns: model and tokenizer
     """
-    # lora_alpha = config.get("lora_alpha")
-    # lora_dropout = config.get("lora_dropout")
-    # lora_r = config.get("lora_r")
+    lora_alpha = config.get("lora_alpha")
+    lora_dropout = config.get("lora_dropout")
+    lora_r = config.get("lora_r")
     model_name = config.get("model_name")
     device_map = config.get("device_map")
     train_max_len = config.get("train_max_len")
@@ -46,7 +46,7 @@ def model_initialize(config):
         llama_path,
         use_auth_token=hf_auth_token,
         device_map=device_map,
-        torch_dtype=torch.float16,
+        # torch_dtype=torch.float16,
     )
     model.config.pad_token_id = model.config.eos_token_id
 
@@ -75,22 +75,22 @@ def model_initialize(config):
     tokenizer = add_special_token(tokenizer)
 
     # Resize input token embeddings matrix of the model if new_num_tokens != config.vocab_size
-    # model.resize_token_embeddings(len(tokenizer))
+    model.resize_token_embeddings(len(tokenizer))
 
-    # lora_config = LoraConfig(
-    #     r=lora_r,
-    #     lora_alpha=lora_alpha,
-    #     lora_dropout=lora_dropout,
-    #     bias="none",
-    #     target_modules=[
-    #         "q_proj",
-    #         "k_proj",
-    #         "v_proj",
-    #     ],
-    #     task_type=TaskType.CAUSAL_LM,
-    # )
-    # model.add_adapter(lora_config, adapter_name="adapter")
-    # model.enable_adapters()
+    lora_config = LoraConfig(
+        r=lora_r,
+        lora_alpha=lora_alpha,
+        lora_dropout=lora_dropout,
+        bias="none",
+        target_modules=[
+            "q_proj",
+            "k_proj",
+            "v_proj",
+        ],
+        task_type=TaskType.CAUSAL_LM,
+    )
+    model.add_adapter(lora_config, adapter_name="adapter")
+    model.enable_adapters()
 
     # # Load the Pre-trained LoRA Adapter
     # model.load_adapter("shuyuej/metamath_lora_llama2_7b_3_epoch")
@@ -106,7 +106,7 @@ def model_initialize(config):
 
 def trainer_loader(config, model, tokenizer, data_module, num_train_epochs):
     """
-    Load trainer for updating Generator G
+    Load training pipeline
     Args:
         config:
         model:

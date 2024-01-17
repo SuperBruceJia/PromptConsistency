@@ -58,12 +58,13 @@ def main(config):
 
     print("Initialize the model and tokenizer!")
     model, tokenizer = model_initialize(config)
-    # model.save_pretrained(save_dir + '/adapter')
+    model.save_pretrained(save_dir + '/adapter')
+    print('Successfully save the pre-trained adapter!')
 
-    # # Performance evaluation on the testing set
-    # print("Evaluate the pretrained model's performance on the Testing Set")
-    # gsm8k_test_one(config=config)
-    # gsm8k_test_multiple(config=config)
+    # Performance evaluation on the testing set
+    print("Evaluate the pretrained model's performance on the Testing Set")
+    gsm8k_test_one(config=config)
+    gsm8k_test_multiple(config=config)
 
     for iterate in range(epochs):
         print("Training iteration %s" % str(iterate))
@@ -73,13 +74,13 @@ def main(config):
             model=model,
             tokenizer=tokenizer,
             data_module=data,
-            num_train_epochs=5
+            num_train_epochs=3
         )
         trainer.train()
-        trainer.save_state()
-        model_saver(trainer=trainer, output_dir=save_dir)
-        # trainer.model.save_pretrained(save_dir + '/adapter')
-        # print('Successfully save the pre-trained adapter of the Generator G!')
+        # trainer.save_state()
+        # model_saver(trainer=trainer, output_dir=save_dir)
+        trainer.model.save_pretrained(save_dir + '/adapter')
+        print('Successfully save the fine-tuned adapter!')
         tokenizer = trainer.tokenizer
         tokenizer.save_pretrained(save_dir)
 
