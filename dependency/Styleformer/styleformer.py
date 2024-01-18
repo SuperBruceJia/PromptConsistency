@@ -37,7 +37,7 @@ class Adequacy:
         self.tokenizer = AutoTokenizer.from_pretrained(adequacy_tag)
         self.model = AutoModelForSequenceClassification.from_pretrained(adequacy_tag, torch_dtype=torch.float32)
 
-    def filter(self, input_phrase, paraphrases, threshold, device="cpu"):
+    def filter(self, input_phrase, paraphrases, threshold, device="cuda"):
         top_phrases = []
         for phrase in paraphrases:
             x = self.tokenizer(input_phrase, phrase, return_tensors='pt', max_length=128, truncation=True)
@@ -53,7 +53,7 @@ class Adequacy:
 
         return top_phrases
 
-    def score(self, input_phrase, paraphrases, threshold, device="cpu"):
+    def score(self, input_phrase, paraphrases, threshold, device="cuda"):
         scores = {}
         for phrase in paraphrases:
             x = self.tokenizer(input_phrase, phrase, return_tensors='pt', max_length=128, truncation=True)
@@ -77,7 +77,7 @@ class StyleFormer:
         self.style = style
 
     def transfer(self, input_phrase, filter=0.95, candidates=5):
-        device = "cpu"
+        device = "cuda"
 
         if self.style == 0:
             output = self._casual_to_formal(input_phrase, device, filter, candidates)

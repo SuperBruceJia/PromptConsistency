@@ -50,7 +50,7 @@ def gsm8k_test(config):
 
             phrase = []
             prompts = []
-            num = 10
+            num = 6
             for i in range(num):
                 sen = evaluation_augmentation(sen=ori_phrase)
                 phrase.append(sen)
