@@ -46,7 +46,7 @@ class Adequacy:
         self.tokenizer = AutoTokenizer.from_pretrained(adequacy_tag)
         self.model = AutoModelForSequenceClassification.from_pretrained(adequacy_tag, torch_dtype=torch.float32)
 
-    def filter(self, input_phrase, paraphrases, threshold, device="cuda"):
+    def filter(self, input_phrase, paraphrases, threshold, device="cpu"):
         top_phrases = []
         for phrase in paraphrases:
             x = self.tokenizer(input_phrase, phrase, return_tensors='pt', max_length=128, truncation=True)
@@ -62,7 +62,7 @@ class Adequacy:
 
         return top_phrases
 
-    def score(self, input_phrase, paraphrases, threshold, device="cuda"):
+    def score(self, input_phrase, paraphrases, threshold, device="cpu"):
         scores = {}
         for phrase in paraphrases:
             x = self.tokenizer(input_phrase, phrase, return_tensors='pt', max_length=128, truncation=True)
@@ -87,7 +87,7 @@ class Fluency:
                                                                         torch_dtype=torch.float32)
         self.tokenizer = AutoTokenizer.from_pretrained(fluency_tag)
 
-    def filter(self, paraphrases, threshold, device="cuda"):
+    def filter(self, paraphrases, threshold, device="cpu"):
         self.model = self.model.to(device)
 
         top_phrases = []
@@ -105,7 +105,7 @@ class Fluency:
 
         return top_phrases
 
-    def score(self, paraphrases, threshold, device="cuda"):
+    def score(self, paraphrases, threshold, device="cpu"):
         self.model = self.model.to(device)
 
         fluency_scores = {}
@@ -207,7 +207,7 @@ class Parrot:
             adequacy_threshold=0.90,
             fluency_threshold=0.90
     ):
-        device = "cuda"
+        device = "cpu"
         self.model = self.model.to(device)
 
         save_phrase = input_phrase
