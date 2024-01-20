@@ -52,15 +52,11 @@ def main(config):
     save_dir = config.get("save_dir")
     epochs = config.get("epochs")
 
+    # Initialize the model and tokenizer
     print("Initialize the model and tokenizer!")
     model, tokenizer = model_initialize(config)
-    # model.save_pretrained(save_dir + '/adapter')
-    # print('Successfully save the pre-trained adapter!')
 
-    # # Performance evaluation on the testing set
-    # print("Evaluate the pretrained model's performance on the Testing Set")
-    # gsm8k_test(config=config)
-
+    # Train the model
     for iterate in range(epochs):
         print("Training iteration %s" % str(iterate))
         data = dataset_loader(tokenizer=tokenizer)
@@ -72,14 +68,20 @@ def main(config):
             num_train_epochs=3
         )
         trainer.train()
-        trainer.model.save_pretrained(save_dir + '/adapter')
+
+        # Save the trained adapter
+        adapter_path = save_dir + "/adapter_iteration_" + str(iterate)
+        os.mkdir(adapter_path)
+
+        trainer.model.save_pretrained(adapter_path)
         print('Successfully save the fine-tuned adapter!')
         tokenizer = trainer.tokenizer
-        tokenizer.save_pretrained(save_dir)
+        tokenizer.save_pretrained(adapter_path)
 
-        # Performance evaluation on the testing set
-        print("Evaluate the model's performance on the Testing Set")
-        gsm8k_test(config=config)
+        if iterate % 5 == 0 and iterate != 0:
+            # Performance evaluation on the testing set
+            print("Evaluate the model's performance on the Testing Set")
+            gsm8k_test(config=config, adapter_path=adapter_path)
 
 
 if __name__ == "__main__":
