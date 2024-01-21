@@ -7,7 +7,6 @@
 # Mistral LICENSE:
 # https://www.apache.org/licenses/LICENSE-2.0
 
-import torch
 from peft import LoraConfig, TaskType
 from transformers import (
     AutoModelForCausalLM,
@@ -16,11 +15,7 @@ from transformers import (
     Trainer,
 )
 
-from utils.utils import (
-    add_special_token,
-    embedding_resize,
-    print_parameters,
-)
+from utils.utils import add_special_token, embedding_resize
 
 
 def model_initialize(config):
@@ -39,27 +34,23 @@ def model_initialize(config):
     train_max_len = config.get("train_max_len")
     hf_auth_token = config.get("hf_auth_token")
     llama_path = config.get("llama_path")
-    # save_dir = config.get("save_dir")
 
     # Load the base model
     model = AutoModelForCausalLM.from_pretrained(
         llama_path,
         use_auth_token=hf_auth_token,
         device_map=device_map,
-        # torch_dtype=torch.float16,
     )
     model.config.pad_token_id = model.config.eos_token_id
 
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(
         model_name,
-        # cache_dir=save_dir,
         model_max_length=train_max_len,
         add_eos_token=True,
         add_bos_token=True,
         padding='longest',
         padding_side="right",
-        # truncation=True,
         return_tensors="pt",
         use_fast=False,
         use_auth_token=hf_auth_token,
@@ -126,7 +117,7 @@ def trainer_loader(config, model, tokenizer, data_module, num_train_epochs):
         per_device_train_batch_size=train_batch_size,
         per_device_eval_batch_size=eval_batch_size,
         gradient_accumulation_steps=gradient_accumulation_steps,
-        # gradient_checkpointing=True,
+        gradient_checkpointing=True,
         optim=optim,
         logging_steps=logging_steps,
         learning_rate=learning_rate,

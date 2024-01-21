@@ -15,7 +15,7 @@ data_save_dir : "./save_folder/data"
 hf_save_dir : "/projectnb/pnn/.cache"
 
 # Training length and number of the generated tokens
-train_max_len : 4096
+train_max_len : 2048
 max_new_tokens : 512
 
 # Batch size
@@ -32,17 +32,6 @@ lora_r : 512
 lora_alpha : 1024
 # Dropout probability for LoRA layers
 lora_dropout : 0.1
-
-# Quantization
-# Activate 4-bit precision base model loading
-use_4bit : True
-# Compute dtype for 4-bit base models
-bnb_4bit_compute_dtype : "float16"
-# Quantization type (fp4 or nf4) - 4-bit NormalFloat (NF4)
-bnb_4bit_quant_type : "nf4"
-# Activate nested quantization for 4-bit base models (double quantization)
-# nested quantization where the quantization constants from the first quantization are quantized again
-use_nested_quant : True
 
 # Output directory where the model predictions and checkpoints will be stored
 # Enable fp16/bf16 training (set bf16 to True with an A100)

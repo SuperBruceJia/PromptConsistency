@@ -8,13 +8,13 @@ import torch
 from torch.utils.data import Dataset
 from datasets import load_dataset, set_caching_enabled
 
-from utils.utils import gsm8k_prompt, perturbation
+from utils.utils import gsm8k_prompt
 
 IGNORE_INDEX = -100
 
 
 def dataset_maker(dataset):
-    print("Start to make dataset!")
+    print("Start to make training dataset!")
     new_dataset = []
     ids = dataset["id"]
     max_id = max(ids)
@@ -31,15 +31,15 @@ def dataset_maker(dataset):
         questions.append(lines["original_question"][0])
 
         # Randomly select K items from the list
-        num_q = random.randint(1, 12)
+        num_q = random.randint(1, 5)
         try:
             selected_q = random.sample(questions, num_q)
         except BaseException:
             num_q = random.randint(1, len(questions))
             selected_q = random.sample(questions, num_q)
 
-        for i in range(len(selected_q)):
-            selected_q[i] = perturbation(sen=selected_q[i], ratio=0.10)
+        # for i in range(len(selected_q)):
+        #     selected_q[i] = perturbation(sen=selected_q[i], ratio=0.10)
 
         answer = lines["answer_detail"][0]
         prompt = gsm8k_prompt(question=selected_q, train=True)
@@ -110,7 +110,10 @@ def preprocess(sources, targets, tokenizer):
     for label, source_len in zip(labels, sources_tokenized["input_ids_lens"]):
         label[:source_len] = IGNORE_INDEX
 
-    return dict(input_ids=input_ids, labels=labels)
+    return dict(
+        input_ids=input_ids,
+        labels=labels
+    )
 
 
 class SupervisedDataset(Dataset):
@@ -123,7 +126,6 @@ class SupervisedDataset(Dataset):
         set_caching_enabled(False)
 
         # Load the fine-tuning dataset
-        # data = load_dataset("shuyuej/mathdata_consistency")
         data = load_dataset("shuyuej/GSM8K-Consistency")
         data = data["train"]
         data = dataset_maker(data)
