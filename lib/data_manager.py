@@ -90,8 +90,8 @@ class SupervisedDataset(Dataset):
 
         # Load the fine-tuning dataset
         dataset = load_dataset("shuyuej/prompt_consistency_train_set", split="train")
-        dataset = dataset.train_test_split(train_size=0.10, shuffle=True)
-        dataset = dataset["train"]
+        # dataset = dataset.train_test_split(train_size=0.10, shuffle=True)
+        # dataset = dataset["train"]
 
         sources = [f"{example['question']}" for example in dataset]
         targets = [f"{example['answer']}" for example in dataset]
