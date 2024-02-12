@@ -252,7 +252,6 @@ class Parrot:
         for pred in preds:
             gen_pp = self.tokenizer.decode(pred, skip_special_tokens=True).lower()
             gen_pp = re.sub('[^a-zA-Z0-9 ?\'-]', '', gen_pp)
-            # gen_pp = re.sub('[^a-zA-Z0-9 \?\'\-]', '', gen_pp)
             paraphrases.add(gen_pp)
 
         adequacy_filter = self.adequacy_score.filter(input_phrase, paraphrases, adequacy_threshold, device)

@@ -6,3 +6,11 @@
 
 ## 🖼️ General Framework
 ![Framework.png](images/Framework.png)
+
+```shell
+git clone https://github.com/SuperBruceJia/Prompt-Consistency-backup.git
+
+export TRANSFORMERS_CACHE=/projectnb/pnn/.cache
+export HF_HOME=/projectnb/pnn/.cache
+export HF_DATASETS_CACHE=/projectnb/pnn/.cache
+```

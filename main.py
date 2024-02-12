@@ -39,7 +39,11 @@ from huggingface_hub import login
 
 from lib.model_loader import model_initialize, trainer_loader
 from lib.data_manager import dataset_loader
-from lib.evaluation import gsm8k_test
+from lib.evaluation import (
+    gsm8k_test_chatgpt,
+    gsm8k_test_promptcraft,
+    gsm8k_test_one_prompt,
+)
 from utils.utils import (
     CustomStream,
     load_config,
@@ -65,7 +69,7 @@ def main(config):
             model=model,
             tokenizer=tokenizer,
             data_module=data,
-            num_train_epochs=3
+            num_train_epochs=1
         )
         trainer.train()
 
@@ -78,10 +82,11 @@ def main(config):
         tokenizer = trainer.tokenizer
         tokenizer.save_pretrained(adapter_path)
 
-        if iterate % 5 == 0 and iterate != 0:
-            # Performance evaluation on the testing set
-            print("Evaluate the model's performance on the Testing Set")
-            gsm8k_test(config=config, adapter_path=adapter_path)
+        # Performance evaluation on the testing set
+        print("Evaluate the model's performance on the Testing Set")
+        gsm8k_test_one_prompt(config=config, adapter_path=adapter_path)
+        gsm8k_test_promptcraft(config=config, adapter_path=adapter_path)
+        gsm8k_test_chatgpt(config=config, adapter_path=adapter_path)
 
 
 if __name__ == "__main__":

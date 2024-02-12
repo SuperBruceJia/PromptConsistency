@@ -1,7 +1,7 @@
 # Model info
 model_name : "meta-llama/Llama-2-7b-hf"
 ft_model : "Llama-2-7b-sft"
-hf_auth_token : "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"
+hf_auth_token : "YOUR_HUGGING_FACE_TOKEN"
 llama_path : "/projectnb/pnn/metamath"
 
 # Dataset path
@@ -15,21 +15,21 @@ data_save_dir : "./save_folder/data"
 hf_save_dir : "/projectnb/pnn/.cache"
 
 # Training length and number of the generated tokens
-train_max_len : 2048
-max_new_tokens : 512
+train_max_len : 4096
+max_new_tokens : 2048
 
 # Batch size
-train_batch_size : 1
-eval_batch_size : 1
+train_batch_size : 2
+eval_batch_size : 2
 
 # Number of training epochs
 epochs : 100
 
 # LoRA
 # LoRA attention dimension
-lora_r : 512
+lora_r : 256
 # Alpha parameter for LoRA scaling
-lora_alpha : 1024
+lora_alpha : 512
 # Dropout probability for LoRA layers
 lora_dropout : 0.1
 
@@ -48,7 +48,7 @@ learning_rate : 0.00002
 weight_decay : 0.
 
 # Optimizer, Learning rate schedule, warm-up ratio
-optim : "adamw_torch"
+optim : "paged_adamw_32bit"
 lr_scheduler_type : "cosine"
 warmup_ratio : 0.03
 

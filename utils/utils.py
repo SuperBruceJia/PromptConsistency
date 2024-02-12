@@ -7,12 +7,6 @@ from fraction import Fraction
 
 import transformers
 
-from data_processing import paragraph_split
-
-from data_processing.paragraph_split import paragraph_splitter
-from data_augmentation.character import CharacterPerturb
-from data_augmentation.word import WordPerturb
-from data_augmentation.sentence import SentencePerturb
 
 DEFAULT_BOS_TOKEN = "<s>"
 DEFAULT_EOS_TOKEN = "</s>"
@@ -48,7 +42,7 @@ def extract_number(completion):
     :param completion: The model's generated response
     :return: The extracted answer number from the completion
     """
-    text = completion.split('The answer is: ')
+    text = completion.split('the final numerical answer is: ')
 
     if len(text) > 1:
         extract_ans = text[-1].strip()
@@ -115,16 +109,18 @@ def add_special_token(tokenizer):
 
 
 def stop_token_list():
-    stop_tokens = ["Question:",
-                   "Question",
-                   "USER:",
-                   "USER",
-                   "ASSISTANT:",
-                   "ASSISTANT",
-                   "Instruction:",
-                   "Instruction",
-                   "Response:",
-                   "Response", ]
+    stop_tokens = [
+        "Question:",
+        "Question",
+        "USER:",
+        "USER",
+        "ASSISTANT:",
+        "ASSISTANT",
+        "Instruction:",
+        "Instruction",
+        "Response:",
+        "Response",
+    ]
 
     return stop_tokens
 
@@ -179,28 +175,63 @@ class CustomStream:
         pass
 
 
-def gsm8k_prompt(question, train=True):
-    """The formatting prompts function for GSM8K database
+def gsm8k_prompt(question, inference=True):
+    """Prompt format for the GSM8K database
 
     :param question: Question (task description)
-    :param answer: Answer to the Question
-    :return: The prompt of the GSM8K database
+    :param train: Add a "Let's think step by step." during inference
+    :return: prompt for the LLMs
     """
-    prompt = ("Below are semantics similar instructions that describe a task. " +
-              "Write a consistent response that appropriately completes these requests.")
+    prompt = ("Below are semantics-preserving instructions that describe a task. "
+              "Write responses that appropriately completes these requests. "
+              "At the end of these responses, please write your final numerical answer. ")
 
     for i, q in enumerate(question):
         prompt += "\n\n### Instruction "
-        prompt += str(i)
+        prompt += str(i + 1)
         prompt += ":\n"
         prompt += q
 
-    if train:
-        prompt += "\n\n### Response:"
-    else:
+        if i < len(question) - 1:
+            prompt += " "
+
+    if inference:
         prompt += "\n\n### Response: Let's think step by step."
+    else:
+        prompt += "\n\n### Response:"
 
     return prompt
+
+
+def gsm8k_answer(answers, number):
+    ans = answers[0].split('The answer is: ')[1]
+
+    response = ""
+    for i in range(number):
+        if i == 0:
+            response += "Response to the instruction "
+        else:
+            response += "\n\nResponse to the instruction "
+
+        response += str(i + 1)
+        response += ":\n"
+        response += random.sample(answers, 1)[0]
+        response += " "
+
+    response += "\n\nChecking all the answers above ("
+    for i in range(number):
+        response += "The answer to the instruction "
+        response += str(i + 1)
+        response += " is "
+        response += ans
+
+        if i < number - 1:
+            response += ", "
+
+    response += "), the final numerical answer is: "
+    response += ans
+
+    return response
 
 
 def unwrap_model(model):
@@ -217,22 +248,6 @@ def unwrap_model(model):
         return model
 
 
-def backward(sentence):
-    # Split paragraph into sentences
-    sen_split = paragraph_split.paragraph_splitter(sentence)
-
-    # Reverse the order of list elements
-    sen_split.reverse()
-
-    # Changing the alphabet letters to lowercase in the first sentence
-    sen_split[0] = sen_split[0].lower()
-
-    sentence = " ".join(sen_split)
-    sentence = "Given the following statements, " + sentence
-
-    return sentence
-
-
 def model_saver(trainer: transformers.Trainer, output_dir: str):
     """Collects the state dict and dump to disk."""
     state_dict = trainer.model.state_dict()
@@ -240,148 +255,3 @@ def model_saver(trainer: transformers.Trainer, output_dir: str):
         cpu_state_dict = {key: value.cpu() for key, value in state_dict.items()}
         del state_dict
         trainer._save(output_dir, state_dict=cpu_state_dict)  # noqa
-
-
-def perturbation(sen, ratio):
-    if random.random() >= ratio:
-        pass
-    else:
-        # Copy the original sentence
-        ori_sen = sen[:]
-
-        # Split the paragraph into sentences
-        sens = paragraph_splitter(paragraph=sen)
-
-        if len(sens) == 0 or len(sens) == 1:
-            return ori_sen
-        else:
-            sen_out = []
-            for i in range(len(sens) - 1):
-                sen = sens[i]
-                level = random.sample(["char_replace",
-                                       "char_delete",
-                                       "char_insert",
-                                       "char_swap",
-                                       "char_keyboard",
-                                       "char_ocr",
-                                       "word_replace",
-                                       "word_delete",
-                                       "word_insert",
-                                       "word_swap",
-                                       "word_split",
-                                       "word_punctuation"], 1)[0]
-
-                noise_ratio = random.sample([0.01, 0.05, 0.10, 0.15, 0.20], 1)[0]
-                character_tool = CharacterPerturb(sentence=sen, level=noise_ratio)
-                word_tool = WordPerturb(sentence=sen, level=noise_ratio)
-
-                if level == "char_replace":
-                    sen = character_tool.character_replacement()
-                elif level == "char_delete":
-                    sen = character_tool.character_deletion()
-                elif level == "char_insert":
-                    sen = character_tool.character_insertion()
-                elif level == "char_swap":
-                    sen = character_tool.character_swap()
-                elif level == "char_keyboard":
-                    sen = character_tool.keyboard_typos()
-                elif level == "char_ocr":
-                    sen = character_tool.optical_character_recognition()
-                elif level == "word_replace":
-                    sen = word_tool.synonym_replacement()
-                elif level == "word_delete":
-                    sen = word_tool.word_deletion()
-                elif level == "word_insert":
-                    sen = word_tool.word_insertion()
-                elif level == "word_swap":
-                    sen = word_tool.word_swap()
-                elif level == "word_split":
-                    sen = word_tool.word_split()
-                elif level == "word_punctuation":
-                    sen = word_tool.insert_punctuation()
-
-                sen_out.append(sen)
-
-            try:
-                sen_out.append(sens[-1])
-                if len(sen_out) > 1 and type(sen_out) == list:
-                    sen = ' '.join(sen_out)
-                elif len(sen_out) == 1 and type(sen_out) == list:
-                    sen = sen_out[0]
-                else:
-                    sen = sen_out
-            except IndexError:
-                print("Index error for the last sentence!")
-                return ori_sen
-
-    return sen
-
-
-def evaluation_augmentation(sen):
-    # Copy the original sentence
-    ori_sen = sen[:]
-
-    # Split the paragraph into sentences
-    sens = paragraph_splitter(paragraph=sen)
-
-    if len(sens) == 0 or len(sens) == 1:
-        return ori_sen
-    else:
-        sen_out = []
-        for i in range(len(sens) - 1):
-            sen = sens[i]
-            sentence_tool = SentencePerturb(sentence=sen)
-
-            level = random.sample(["bt_hugging_face", "bt_google", "formal",
-                                   "casual", "passive", "active", "paraphrase"], 1)[0]
-
-            if level == "bt_hugging_face":
-                sen = sentence_tool.back_translation_hugging_face()
-            elif level == "bt_google":
-                sen = sentence_tool.back_translation_google()
-            elif level == "formal":
-                sen = sentence_tool.formal()
-            elif level == "casual":
-                sen = sentence_tool.casual()
-            elif level == "passive":
-                sen = sentence_tool.passive()
-            elif level == "active":
-                sen = sentence_tool.active()
-            else:
-                sen = sentence_tool.paraphrase()
-
-            while sen is None:
-                level = random.sample(["bt_hugging_face", "bt_google", "formal",
-                                       "casual", "passive", "active", "paraphrase"], 1)[0]
-
-                if level == "bt_hugging_face":
-                    sen = sentence_tool.back_translation_hugging_face()
-                elif level == "bt_google":
-                    sen = sentence_tool.back_translation_google()
-                elif level == "formal":
-                    sen = sentence_tool.formal()
-                elif level == "casual":
-                    sen = sentence_tool.casual()
-                elif level == "passive":
-                    sen = sentence_tool.passive()
-                elif level == "active":
-                    sen = sentence_tool.active()
-                else:
-                    sen = sentence_tool.paraphrase()
-
-            sen_out.append(sen)
-
-        try:
-            sen_out.append(sens[-1])
-            if len(sen_out) > 1 and type(sen_out) == list:
-                sen = ' '.join(sen_out)
-            elif len(sen_out) == 1 and type(sen_out) == list:
-                sen = sen_out[0]
-            else:
-                sen = sen_out
-
-        except IndexError:
-            print("Index error for the last sentence!")
-            return ori_sen
-
-        return sen

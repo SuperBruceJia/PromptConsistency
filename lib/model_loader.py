@@ -15,7 +15,11 @@ from transformers import (
     Trainer,
 )
 
-from utils.utils import add_special_token, embedding_resize
+from utils.utils import (
+    add_special_token,
+    embedding_resize,
+    print_parameters,
+)
 
 
 def model_initialize(config):
@@ -81,6 +85,9 @@ def model_initialize(config):
     )
     model.add_adapter(lora_config, adapter_name="adapter")
     model.enable_adapters()
+
+    # Print the trainable parameters and all the parameters
+    print_parameters(model=model)
 
     return model, tokenizer
 

@@ -1,6 +1,5 @@
 # coding=utf-8
 
-import random
 import copy
 from dataclasses import dataclass
 
@@ -8,46 +7,8 @@ import torch
 from torch.utils.data import Dataset
 from datasets import load_dataset, set_caching_enabled
 
-from utils.utils import gsm8k_prompt
 
 IGNORE_INDEX = -100
-
-
-def dataset_maker(dataset):
-    print("Start to make training dataset!")
-    new_dataset = []
-    ids = dataset["id"]
-    max_id = max(ids)
-
-    for id in range(max_id):
-        questions = []
-
-        # Select all lines where 'id' is equal to id
-        lines = dataset.filter(lambda example: example['id'] == id, batch_size=None)
-
-        # Retrieved the paraphrased questions
-        for q in lines["paraphrased_question"]:
-            questions.append(q)
-        questions.append(lines["original_question"][0])
-
-        # Randomly select K items from the list
-        num_q = random.randint(1, 5)
-        try:
-            selected_q = random.sample(questions, num_q)
-        except BaseException:
-            num_q = random.randint(1, len(questions))
-            selected_q = random.sample(questions, num_q)
-
-        # for i in range(len(selected_q)):
-        #     selected_q[i] = perturbation(sen=selected_q[i], ratio=0.10)
-
-        answer = lines["answer_detail"][0]
-        prompt = gsm8k_prompt(question=selected_q, train=True)
-        new_dataset.append({"question": prompt, "answer": answer})
-
-    random.shuffle(new_dataset)
-
-    return new_dataset
 
 
 def tokenize_fn(strings, tokenizer):
@@ -74,7 +35,9 @@ def tokenize_fn(strings, tokenizer):
         for text in strings
     ]
 
-    input_ids = labels = [tokenized.input_ids[0] for tokenized in tokenized_list]
+    input_ids = labels = [
+        tokenized.input_ids[0] for tokenized in tokenized_list
+    ]
     input_lens = labels_lens = [
         tokenized.input_ids.ne(tokenizer.pad_token_id).sum().item() for tokenized in tokenized_list
     ]
@@ -126,12 +89,12 @@ class SupervisedDataset(Dataset):
         set_caching_enabled(False)
 
         # Load the fine-tuning dataset
-        data = load_dataset("shuyuej/GSM8K-Consistency")
-        data = data["train"]
-        data = dataset_maker(data)
+        dataset = load_dataset("shuyuej/prompt_consistency_train_set", split="train")
+        dataset = dataset.train_test_split(train_size=0.10, shuffle=True)
+        dataset = dataset["train"]
 
-        sources = [f"{example['question']}" for example in data]
-        targets = [f"{example['answer']}" for example in data]
+        sources = [f"{example['question']}" for example in dataset]
+        targets = [f"{example['answer']}" for example in dataset]
 
         self.sources = sources
         self.targets = targets
